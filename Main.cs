@@ -2,6 +2,41 @@ using System;
 
 namespace Monsters
 {
+	class Item
+	{
+		public string name = "";
+		public int weight = 0;
+
+		public Item (string itsName, int itsWeight)
+		{
+			name  = itsName;
+			weight = itsWeight;
+		}
+	}
+
+	class Weapon : Item
+	{
+		public int attackPoints = 0;
+
+		public Weapon (string itsName, int itsAttackPoints, int itsWeight) : base (itsName, itsWeight)
+		{
+			name = itsName;
+			attackPoints = itsAttackPoints;
+			weight = itsWeight;
+		}
+	}
+
+	class Armor : Item
+	{
+		public int defencePoints = 0;
+
+		public Armor (string itsName, int itsDefencePoints, int itsWeight) : base (itsName, itsWeight)
+		{
+			name = itsName;
+			defencePoints = itsDefencePoints;
+			weight = itsWeight;
+		}
+	}
 
 	class Monster
 	{
@@ -100,6 +135,7 @@ namespace Monsters
 		{
 			int loot_roll = rand.Next (1, 6);
 			string[] loot = {"Iron dagger","Leather cowl","Wooden shield","Leather trousers","Leather shoes","Leather armor"};
+
 			return loot[loot_roll];
 		}
 	}
@@ -171,6 +207,13 @@ namespace Monsters
 			int xp_gained = Convert.ToInt32(D1.getPlayer_XP(healthM,defenceP,attackM));
 			string monster_loot = D1.generate_loot();
 
+			Weapon Iron_dagger = new Weapon("Iron dagger", 5, 10);
+			Armor Leather_cowl = new Armor("Leather cowl",2,2);
+			Armor Wooden_shield = new Armor("Wooden shield",12,15);
+			Armor Leather_trousers = new Armor("Leather trousers", 5, 3);
+			Armor Leather_shoes = new Armor("Leather shoes",1,3);
+			Armor Leather_armor = new Armor("Leather armor",5,10);
+
 			Console.WriteLine ("\nFIGHT!\n");
 			do 
 			{
@@ -222,6 +265,46 @@ namespace Monsters
 					Console.WriteLine ("\nYou have slain {0} !",nameM);
 					Console.WriteLine ("You gained {0} XP.", xp_gained);
 					Console.WriteLine ("You looted a {0}, from {1}.",monster_loot,nameM);
+
+					switch (monster_loot)
+					{
+						//string[] loot = {"Iron dagger","Leather cowl","Wooden shield","Leather trousers","Leather shoes","Leather armor"};
+						case "Iron dagger":
+											p1.attack = p1.attack +Iron_dagger.attackPoints;
+											attackP = p1.attack;
+											Console.WriteLine ("Your new attack points total {0}",attackP);
+											break;
+
+						case "Leather cowl":	
+											p1.defence = p1.defence + Leather_cowl.defencePoints;
+											defenceP = p1.defence;
+											Console.WriteLine ("Your new defence points total {0}",defenceP);
+											break;
+
+						case "Wooden shield":
+											p1.defence = p1.defence +Wooden_shield.defencePoints;
+											defenceP = p1.defence;
+											Console.WriteLine ("Your new defence points total {0}",defenceP);
+											break;
+
+						case "Leather trousers":
+											p1.defence = p1.defence + Leather_trousers.defencePoints;
+											defenceP = p1.defence;
+											Console.WriteLine ("Your new defence points total {0}",defenceP);
+											break;
+
+						case "Leather shoes":
+											p1.defence = p1.defence + Leather_shoes.defencePoints;
+											defenceP = p1.defence;
+											Console.WriteLine ("Your new defence points total {0}",defenceP);
+											break;
+
+						case "Leather armor":
+											p1.defence = p1.defence + Leather_armor.defencePoints;
+											defenceP = p1.defence;
+											Console.WriteLine ("Your new defence points total {0}",defenceP);
+											break;
+					}
 				}
 				System.Threading.Thread.Sleep(500);
 			} while (skele.health > 0);
