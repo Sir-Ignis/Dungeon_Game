@@ -1,0 +1,11 @@
+
+Name: daniel
+Health: 65
+Mana: 28
+Defence: 6
+Attack: 10
+Experience: 0
+
+
+
+

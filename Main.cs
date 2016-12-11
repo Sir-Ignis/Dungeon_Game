@@ -1,149 +1,28 @@
 using System;
+using Items;
+using Monsters;
+using Dungeons;
+using Players;
+using MainMenu;
 
-namespace Monsters
+namespace Dungeon_Game
 {
-	class Item
-	{
-		public string name = "";
-		public int weight = 0;
-
-		public Item (string itsName, int itsWeight)
-		{
-			name  = itsName;
-			weight = itsWeight;
-		}
-	}
-
-	class Weapon : Item
-	{
-		public int attackPoints = 0;
-
-		public Weapon (string itsName, int itsAttackPoints, int itsWeight) : base (itsName, itsWeight)
-		{
-			name = itsName;
-			attackPoints = itsAttackPoints;
-			weight = itsWeight;
-		}
-	}
-
-	class Armor : Item
-	{
-		public int defencePoints = 0;
-
-		public Armor (string itsName, int itsDefencePoints, int itsWeight) : base (itsName, itsWeight)
-		{
-			name = itsName;
-			defencePoints = itsDefencePoints;
-			weight = itsWeight;
-		}
-	}
-
-	class Monster
-	{
-		public string name = "";
-		public int health = 0;
-		public int mana = 0;
-		public int defence = 0; 
-		public int attack = 0;
-
-		public Monster (string itsName, int itsHealth, int itsMana, int itsDefence, int itsAttack)
-		{
-		}
-	}
-
-	class Skeleton : Monster
-	{
-		public Skeleton (string itsName, int itsHealth, int itsMana, int itsDefence, int itsAttack) : base (itsName, itsHealth, itsMana,  itsDefence, itsAttack)
-		{
-		}
-	}
-
-	class Player
-	{
-		public string name = "";
-		public int health = 0;
-		public int mana = 0;
-		public int defence = 0;
-		public int attack = 0;
-
-		public int get_stats (int x)
-		{
-			Random rand = new Random ();
-			int rand_hp = rand.Next (1, 20) + 50;
-			int rand_mp = rand.Next (1, 10) + 25;
-			int rand_df = rand.Next (1, 5) + 3;
-			int rand_ak = rand.Next (1, 10) + 3;
-
-
-				switch (x) 
-				{
-					case 1:
-						return rand_hp;
-
-					case 2:
-						return rand_mp;
-
-					case 3:
-						return rand_df;
-
-					case 4:
-						return rand_ak;
-				}
-
-			return 0;
-		}
-
-		public Player (string itsName, int itsHealth, int itsMana, int itsDefence, int itsAttack)
-		{
-		}
-	}
-
-	class Dungeon
-	{
-		public Random rand = new Random();
-		public int getMonster_Damage (int atk_statM) //takes monster's attack stat as argument
-		{
-			int dmg_roll = rand.Next (1,atk_statM);
-			return dmg_roll;
-		}
-
-		public int getPlayer_Damage (int atk_statP) //takes player's attack stat as argument
-		{
-			int dmg_roll = rand.Next (1,atk_statP);
-			return dmg_roll;
-		}
-
-		public int damage_TakenM (int dmg_receivedM, int def_statM) //takes player's dmg; monster's def as arguments
-		{
-			int dmg_takenM = 0;
-			if ((dmg_receivedM - def_statM) > 0) 
-			{
-				dmg_takenM = (dmg_receivedM - def_statM);
-				return dmg_takenM;
-			}
-
-			else return dmg_takenM; // will return 0
-		}
-
-		public decimal getPlayer_XP (int hp_statM, int def_statP, int atk_statM)
-		{
-			decimal XP = ( hp_statM / (atk_statM - def_statP) ) + hp_statM;
-			return Math.Truncate(XP);
-		}
-
-		public string generate_loot ()
-		{
-			int loot_roll = rand.Next (1, 6);
-			string[] loot = {"Iron dagger","Leather cowl","Wooden shield","Leather trousers","Leather shoes","Leather armor"};
-
-			return loot[loot_roll];
-		}
-	}
 
 	class MainClass
 	{
 		public static void Main (string[] args)
 		{
+			Menu m = new Menu ();
+			m.print_Menu ();
+
+			Console.Write ("USER: ");
+			string response = Console.ReadLine ();
+
+			if ((response == "exit") || (response == "Exit") || (response == "EXIT")) 
+			{
+				System.Environment.Exit (1);
+			}
+			
 			Skeleton skele = new Skeleton ("Default Skeleton", 60, 10, 10, 5);
 
 			string nameM = skele.name = "Bob";
@@ -159,13 +38,15 @@ namespace Monsters
 				"\n{4} ATK" +
 				"\nhas been created...", nameM, healthM, manaM, defenceM, attackM); //M = Monster
 
-			Player p1 = new Player ("Default Player", 0, 0, 0, 0);
+			Player p1 = new Player ("Default Player",0, 0, 0, 0, 0);
 
 			string nameP = p1.name = System.Security.Principal.WindowsIdentity.GetCurrent ().Name;
 			int healthP = p1.health = 30;
 			int manaP = p1.mana = 5;
 			int defenceP = p1.defence = 0;
 			int attackP = p1.attack = 10;
+			int xpP = p1.xp;
+			int xp_to_lvl_main = p1.get_XP_for_next_level();
 
 			Console.WriteLine ("\nWelcome {0} !", nameP);
 
@@ -194,7 +75,8 @@ namespace Monsters
 			                   "\n{2} MP" +
 			                   "\n{3} DEF" +
 			                   "\n{4} ATK" +
-			                   "\nhas been created...\n", nameP, healthP, manaP, defenceP, attackP); //P = Player
+			                   "\n{5} XP" +
+			                   "\nhas been created...\n", nameP, healthP, manaP, defenceP, attackP,xpP); //P = Player
 
 			int dmg_dealtP = 0;
 			int dmg_takenM = 0;
@@ -205,6 +87,9 @@ namespace Monsters
 			Dungeon D1 = new Dungeon();
 			
 			int xp_gained = Convert.ToInt32(D1.getPlayer_XP(healthM,defenceP,attackM));
+
+			p1.save_starting_stats(nameP,healthP,manaP,defenceP,attackP,xpP);
+
 			string monster_loot = D1.generate_loot();
 
 			Weapon Iron_dagger = new Weapon("Iron dagger", 5, 10);
@@ -264,6 +149,12 @@ namespace Monsters
 				{
 					Console.WriteLine ("\nYou have slain {0} !",nameM);
 					Console.WriteLine ("You gained {0} XP.", xp_gained);
+					p1.xp = p1.xp + xp_gained;
+					xpP = xpP + p1.xp;
+
+					xp_to_lvl_main = p1.get_XP_for_next_level();
+
+					Console.WriteLine ("You currently have {0} XP and need {1} XP to progress to the next level.", xpP, xp_to_lvl_main);
 					Console.WriteLine ("You looted a {0}, from {1}.",monster_loot,nameM);
 
 					switch (monster_loot)
