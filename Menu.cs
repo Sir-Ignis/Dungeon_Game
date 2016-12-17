@@ -1,9 +1,32 @@
 using System;
+using System.Threading;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace MainMenu
 {
 	class Menu
 	{
+		[DllImport("user32.dll")] //*
+		public static extern bool ShowWindow(System.IntPtr hWnd, int cmdShow); //*
+
+		//*only for windows
+		public void Maximize() //*
+		{
+			Process p = Process.GetCurrentProcess();
+			ShowWindow(p.MainWindowHandle, 3); //SW_MAXIMIZE = 3
+		}
+
+		public void loading ()
+		{
+			for(int i = 0; i < 101; ++i)
+			{
+				Console.Write("\r{0}%  Loaded", i);
+				Thread.Sleep(50);
+			}
+			Console.WriteLine (); //clears up
+			Thread.Sleep (250);
+		}
 		public void centre (int x) // trunc(string length / 2 )
 		{
 			int half_way = System.Console.WindowWidth/2;
@@ -15,6 +38,16 @@ namespace MainMenu
 		public void print_Menu ()
 		{
 			int x = 0;
+
+			for (int i = 0; i < System.Console.WindowWidth; i++) 
+			{
+				Console.Write ("*");
+			}
+
+			x = Convert.ToInt32(Math.Truncate(20M/2));
+			centre(x);
+			Console.WriteLine ("ARX LUDUS © - VERSION 0.1"); //0 = Alpha
+
 			for (int i = 0; i < System.Console.WindowWidth; i++) 
 			{
 				Console.Write ("*");
@@ -49,6 +82,12 @@ namespace MainMenu
 				Console.Write ("*");
 			}
 
+		}
+
+		public void reset_colours ()
+		{
+			Console.BackgroundColor = ConsoleColor.Black;
+			Console.ForegroundColor = ConsoleColor.White;
 		}
 		public Menu ()
 		{
