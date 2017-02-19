@@ -1,9 +1,11 @@
 using System;
+using System.Media;
 using System.IO;
 using System.Threading;
 using Dungeons;
 using Dungeon_Game;
 using MainMenu;
+using Items;
 
 namespace Players
 {
@@ -19,7 +21,7 @@ namespace Players
 		public int xp_lvl = 1;
 		public int cap = 180;
 		public bool wielding_weapon = false;
-		public string [] items_equipped = {"","","","","",""}; //6 empty string place holders for 6 different types of items
+		public string [] items_equipped = {"","","","","","",""}; //7 empty string place holders for 6 different types of items
 
 		/*ITEMS EQUIPPED [x]* ITEM
 		 * 0				* Helmet
@@ -28,6 +30,7 @@ namespace Players
 		 * 3				* Shield
 		 * 4				* Legs
 		 * 5				* Shoes
+		 * 6				* Backpack
 		 */
 
 		public Random rand = new Random();
@@ -150,6 +153,10 @@ namespace Players
 					case 'M':
 						canMove = true;
 						break;
+
+					case 'B':
+						canMove = true;
+						break;
 				
 					case 'S':
 						canMove = true;
@@ -176,6 +183,10 @@ namespace Players
 						break;
 					
 					case 'M':
+						canMove = true;
+						break;
+
+					case 'B':
 						canMove = true;
 						break;
 					
@@ -208,6 +219,10 @@ namespace Players
 						canMove = true;
 						break;
 					
+					case 'B':
+						canMove = true;
+						break;
+					
 					case 'S':
 						canMove = true;
 						break;
@@ -234,6 +249,10 @@ namespace Players
 						break;
 					
 					case 'M':
+						canMove = true;
+						break;
+
+					case 'B':
 						canMove = true;
 						break;
 					
@@ -343,8 +362,10 @@ namespace Players
 			return current_class;
 		}
 
-		public string [] player_items_equiped (string[] items_worn)
+		public string [] player_items_equiped (string[] items_worn, Container itsBackpack, Player itsP1)
 		{
+			string response = "";
+			string [] itemsToEquip = new string [6];
 			/*helmet value = 1;
 			 *weapon value = 2;
 			 *armor value = 4;
@@ -353,33 +374,181 @@ namespace Players
 			 *shoes value = 32;
 			*/
 
-			for (int i = 0; i < items_worn.Length; i++) 
-			{
-				switch (items_worn[i])
+			/*Console.WriteLine ("Would you like to equip any items from your backpack?");
+			do {
+				Console.Write ("\nUser: ");
+				response = Console.ReadLine ();
+			} while ( ( (response != "yes") && (response != "Yes") && (response != "YES") ) && ( (response != "no") && (response != "No") && (response != "NO") ));
+
+			if ((response == "yes") || (response == "Yes") || (response == "YES")) 
+			{*/
+				Console.WriteLine ("Which item would you like to equip? ");
+
+				for (int j = 0; j < itsBackpack.slots; j++)
 				{
+					//Console.WriteLine (itsBackpack.items_contained[j]);// for debugging
+					switch (itsBackpack.items_contained[j])
+					{
+						case "Leather armour":
+						itemsToEquip[0] = "Leather armour";
+						break;
+
+						case "Leather cowl":
+						itemsToEquip[1] = "Leather cowl";
+						break;
+
+						case "Leather trousers":
+						itemsToEquip[2] = "Leather trousers";
+						break;
+
+						case "Leather shoes":
+						itemsToEquip[3] = "Leather shoes";
+						break;
+
+						case "Wooden shield":
+						itemsToEquip[4] = "Wooden shield";
+						break;
+
+						case "Iron dagger":
+						itemsToEquip[5] = "Iron dagger";
+						break;
+					}
+				}
+
+				do {
+					Console.Write ("\nUser: ");
+					response = Console.ReadLine ();
+				}while ( (response != itemsToEquip[0]) && (response != itemsToEquip[1]) && (response != itemsToEquip[2]) && (response != itemsToEquip[3]) && (response != itemsToEquip[4]) 
+				        && (response != itemsToEquip[4]) && (response != itemsToEquip[5]) && (response != "Nothing"));
+
+
+				for (int i = 0; i < items_worn.Length; i++) 
+				{
+					switch (items_worn[i])
+					{
 					case "": //blank
 						items_worn[i] = "nothing";
 						break;
-					
+						
 					case "Iron dagger":
 						wielding_weapon = true;
 						break;
+					}
 				}
+
+				switch (response)
+				{
+					/*ITEMS EQUIPPED [x]* ITEM
+		 * 0				* Helmet
+		 * 1				* Chestpiece
+		 * 2				* Weapon
+		 * 3				* Shield
+		 * 4				* Legs
+		 * 5				* Shoes
+		 * 6				* Backpack
+		 */
+				case "Leather cowl":
+					if (items_worn[0] == "nothing")
+					{
+						items_worn[0] = response;
+						itsP1.defence += 2;
+
+					}
+					else //items_worn == "Leather cowl"
+					{
+						Console.WriteLine ("\nYou are already wearing a {0}",response);
+					}
+					break;
+
+				case "Leather armour":
+					if (items_worn[1] == "nothing")
+					{
+						items_worn[1] = response;
+						itsP1.defence += 5;
+					}
+					else //items_worn == "Leather armour"
+					{
+						Console.WriteLine ("\nYou are already wearing a {0}",response);
+					}
+					break;
+
+				case "Iron dagger":
+					if (items_worn[2] == "nothing")
+					{
+						items_worn[2] = response;
+						itsP1.attack += 5;
+					}
+					else //items_worn == "Iron dagger"
+					{
+						Console.WriteLine ("\nYou are already wielding an {0}",response);
+					}
+					break;
+
+				case "Wooden shield":
+					if (items_worn[3] == "nothing")
+					{
+						items_worn[3] = response;
+						itsP1.defence += 12;
+					}
+					else //items_worn == "Wooden shield"
+					{
+						Console.WriteLine ("\nYou are already wielding a {0}",response);
+					}
+					break;
+				
+				case "Leather trousers":
+					if (items_worn[4] == "nothing")
+					{
+						items_worn[4] = response;
+						itsP1.defence += 5;
+					}
+					else //items_worn == "Leather trousers"
+					{
+						Console.WriteLine ("\nYou are already wearing {0}",response);
+					}
+					break;
+
+				case "Leather shoes":
+					if (items_worn[5] == "nothing")
+					{
+						items_worn[5] = response;
+						itsP1.defence += 1;
+					}
+					else //items_worn == "Leather shoes"
+					{
+						Console.WriteLine ("\nYou are already wearing {0}",response);
+					}
+					break;
+				//}
 			}
 			return items_worn;
 		}
 
 		public void print_worn_items (string[] items_worn)
 		{
+			for (int i = 0; i < items_worn.Length; i++) 
+			{
+				if (items_worn[i].Length == 0)
+				{
+					items_worn [i] = "nothing";
+				}
+			}
 			string slot_item = "";
 
-			Console.Write ("You are wearing a ");
-			for (int i = 0; i < items_worn.Length; i++) 
+			for (int i = 0; i < 6; i++) 
 			{
 				slot_item = items_worn[i];
 
-				if (i < items_worn.Length - 1)
+				if (i < 5)
 				{
+					if ((slot_item == "nothing") && (i == 0))
+					{
+						Console.Write ("\nYou are wearing ");
+					}
+					else if (i== 0)
+					{
+						Console.Write ("\nYou are wearing a ");
+					}
 					Console.Write ("{0}, ",slot_item);
 				}
 				else //last item
@@ -387,6 +556,29 @@ namespace Players
 					Console.WriteLine ("{0} .",slot_item);
 				}
 			}
+		}
+
+		public void printStats ()
+		{
+			/*string response = "";
+			Console.WriteLine ("\n\nWould you like to print your stats?");
+
+			do {
+				Console.Write ("\nUser: ");
+				response = Console.ReadLine ();
+			} while ( ( (response != "yes") && (response != "Yes") && (response != "YES") ) && ( (response != "no") && (response != "No") && (response != "NO") ));
+			
+			if ((response == "yes") || (response == "Yes") || (response == "YES")) 
+			{*/
+
+			Console.WriteLine ("A player called {0} with:\n" +
+			                   "\n{1} HP" +
+			                   "\n{2} MP" +
+			                   "\n{3} DEF" +
+			                   "\n{4} ATK" +
+			                   "\n{5} XP" +
+			                   "\nexists...\n", name, health, mana, defence, attack, xp);
+			//}
 		}
 
 		public void save_starting_stats (string playerName, int hp, int mp, int def, int atk, int xp_s, string[] items_equipped) //s = start
@@ -526,19 +718,37 @@ namespace Players
 		public string get_attack (int mana)
 		{
 			string [] attacks = {"Punch","Stab","Kick"};
+			char [] shortcutAttacks = {'z','x','c'};
 			string attack_ability = "";
 
 			Console.WriteLine ("Which attack would you like to use?");
 			Console.Write ("Attacks: ");
 
 			for (int i = 0; i < attacks.Length; i++) {
-				Console.Write ("{0} ", attacks [i]);
+				Console.Write ("{0} ({1}) ", attacks [i], shortcutAttacks [i]);
 			}
 
-			do {
+
+			Console.Write ("User: ");
+			ConsoleKeyInfo keyInfo = Console.ReadKey ();
+			Console.WriteLine ();
+			switch (keyInfo.Key) 
+			{
+				case ConsoleKey.Z:
+					attack_ability = "punch";
+					break;
+				case ConsoleKey.X:
+					attack_ability = "stab";
+					break;
+				case ConsoleKey.C:
+					attack_ability = "kick";
+					break;					
+			}
+
+			/*do {
 				Console.Write ("\nUser:");
 				attack_ability = Console.ReadLine ();
-			} while (( (attack_ability != "Punch") && (attack_ability != "punch") ) && ( (attack_ability != "Stab") && (attack_ability != "stab") ) && ( (attack_ability != "Kick") && (attack_ability != "kick") ) );
+			} while (( (attack_ability != "Punch") && (attack_ability != "punch") ) && ( (attack_ability != "Stab") && (attack_ability != "stab") ) && ( (attack_ability != "Kick") && (attack_ability != "kick") ) );*/
 
 			if ( ((attack_ability == "Stab") || (attack_ability == "stab")) && (wielding_weapon == false)) 
 			{
@@ -550,8 +760,24 @@ namespace Players
 					Console.ForegroundColor = ConsoleColor.Red;
 					Console.WriteLine ("You can only use the attack abilities 'Punch' or 'Kick'.\n");
 					m.reset_colours();
+					/*Console.Write ("User: ");
+					attack_ability = Console.ReadLine();*/
+
 					Console.Write ("User: ");
-					attack_ability = Console.ReadLine();
+					keyInfo = Console.ReadKey ();
+					Console.WriteLine ();
+					switch (keyInfo.Key) 
+					{
+					case ConsoleKey.Z:
+						attack_ability = "punch";
+						break;
+					case ConsoleKey.X:
+						attack_ability = "stab";
+						break;
+					case ConsoleKey.C:
+						attack_ability = "kick";
+						break;					
+					}
 				}while ( (attack_ability != "Punch") && (attack_ability != "punch") && ( (attack_ability != "Kick") && (attack_ability != "kick")));
 			}
 			Console.WriteLine ();
@@ -569,11 +795,21 @@ namespace Players
 							 break;
 				case "Stab":
 							attack_damage = attack + rand.Next (2,5);
+							SoundPlayer player = new SoundPlayer();
+							player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "stab_sound.wav";
+							player.Play();
 							break;
 				case "Kick":
-							attack_damage = attack + rand.Next (0,1);
+							attack_damage = attack + rand.Next (0,2);
+							SoundPlayer player1 = new SoundPlayer();
+							player1.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "kick.wav";
+							player1.Play();
 							break;
 				case "punch":
+							attack_damage = attack + rand.Next (1,3);
+							SoundPlayer player2 = new SoundPlayer();
+							player2.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "punch.wav";
+							player2.Play();
 							goto case "Punch";
 				case "stab":
 							goto case "Stab";
@@ -603,6 +839,33 @@ namespace Players
 			xp = itsXP;
 			cap = itsCap;
 		}
+
+		/*public void displayPlayerItems()
+		{
+			//requires implementation of a backpack
+		}*/
+
+		public void print_player_RIP()
+		{
+			Console.WriteLine("        __.....__ "+
+							 "\n   .'         ':,"+
+							 "\n   / __  _  __  \\"+
+							 "\n  | |_)) || |_))||"+
+							 "\n  | | \\ || |   ||"+
+							 "\n  |             ||   _,"+
+							 "\n  |             ||.-(_{}"+
+							 "\n  |             |/    `"+
+					         "\n  |        ,_ (\\;|/)"+
+							 "\n\\|       {}_)-,||`"+
+							 "\n\\;/,,;;;;;;;,\\|//,"+
+							 "\n.;;;;;;;;;;;;;;;;,"+
+					         "\n\\,;;;;;;;;;;;;;;;;,//"+
+							 "\n\\;;;;;;;;;;;;;;;;,//"+
+							 "\n,\';;;;;;;;;;;;;;;;'"+
+						     "\n    ;;;;;;;;;;;'");
+		}
+
+
 	}
 }
 
