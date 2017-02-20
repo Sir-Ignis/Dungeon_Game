@@ -78,22 +78,22 @@ namespace Monsters
 		}
 
 
-		public Monster (string itsName, int itsHealth, int itsMana, int itsDefence, int itsAttack)
+		public Monster ()
 		{
 		}
 	}
 
 	class Skeleton : Monster
 	{
-		public Skeleton (string itsName, int itsHealth, int itsMana, int itsDefence, int itsAttack) : base (itsName, itsHealth, itsMana,  itsDefence, itsAttack)
+		public Skeleton () : base ()
 		{
-			name = itsName;
-			health = itsHealth;
-			mana = itsMana;
-			defence = itsDefence;
-			attack = itsAttack;
+			name = generate_random_name ();
+			health = get_stats (1);
+			mana = get_stats (2);
+			defence = get_stats (3);
+			attack = get_stats (4);
 		}
-
+			
 		public int get_stats (int x)
 		{
 			int rand_hp = rand.Next (1, 20) + 30;
@@ -123,13 +123,13 @@ namespace Monsters
 
 	class Wraith : Monster
 	{
-		public Wraith (string itsName, int itsHealth, int itsMana, int itsDefence, int itsAttack) : base (itsName, itsHealth, itsMana,  itsDefence, itsAttack)
+		public Wraith () : base ()
 		{
-			name = itsName;
-			health = itsHealth;
-			mana = itsMana;
-			defence = itsDefence;
-			attack = itsAttack;
+			name = "Wraith";
+			health = boss1_stats (1);
+			mana = boss1_stats (2);
+			defence = boss1_stats (3);
+			attack = boss1_stats (4);
 		}
 
 		public int boss1_stats (int x)
@@ -192,12 +192,12 @@ namespace Monsters
 
 				if (skeletonsSummoned == 1)
 				{
-					Skeleton summon1 = new Skeleton("Joe Bloggs 1",45,0,5,5);
+					//Skeleton summon1 = new Skeleton("Joe Bloggs 1",45,0,5,5);
 				}
 				else //skeletonsSummoned = 2
 				{
-					Skeleton summon1 = new Skeleton("Joe Bloggs 1",45,0,5,5);
-					Skeleton summon2 = new Skeleton("Joe Bloggs 2",45,0,5,5);
+					//Skeleton summon1 = new Skeleton("Joe Bloggs 1",45,0,5,5);
+					//Skeleton summon2 = new Skeleton("Joe Bloggs 2",45,0,5,5);
 				}
 
 			}

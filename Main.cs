@@ -1,5 +1,5 @@
 using System;
-using System.Media;
+using Sound;
 using Items;
 using Monsters;
 using Dungeons;
@@ -18,9 +18,9 @@ namespace Dungeon_Game
 		{
 			Random rand = new Random ();
 			Menu m = new Menu ();
-			SoundPlayer player = new SoundPlayer ();
-			player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "Dungeon_Ambience_Music.wav";
-			player.Play ();
+			Music menuMusic = new Music ("Dungeon_Ambience_Music.wav");
+			menuMusic.playMusic ();
+
 			string response = "";
 			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 				m.Maximize ();
@@ -46,6 +46,7 @@ namespace Dungeon_Game
 			
 			case 'H':
 				m.printHelp();
+					//m.print_credits(); TODO
 				Console.WriteLine ("\nPress any key to return to the main menu...");
 				Console.ReadKey();
 				Console.Clear();
@@ -69,38 +70,16 @@ namespace Dungeon_Game
 			}
 
 			Console.Clear ();
-			player.Stop ();
-			player.Dispose();
+			menuMusic = null;
+			GC.Collect ();
 
 			m.loading(); //<--- remove when coding
 			Console.Clear ();
 
 			m.print_cave();
 
-			Skeleton skele = new Skeleton ("Default Skeleton", 60, 10, 10, 5);
-			Wraith Boss = new Wraith ("Default Wraith", 100, 50, 5, 12);
-
-			/*string nameM =*/
-			skele.name = skele.generate_random_name ();
-			/*int healthM =*/
-			skele.health = 30;
-			/*int manaM = */
-			skele.mana = 5;
-			/*int defenceM =*/
-			skele.defence = 0;
-			/*int attackM = */
-			skele.attack = 10;
-
-			Boss.name = "Wraith";
-
-			/* <--- for debug only
-			Console.WriteLine ("A skeleton called {0} with:" +
-				"\n{1} HP" +
-				"\n{2} MP" +
-				"\n{3} DEF" +
-				"\n{4} ATK" +
-				"\nhas been created...", nameM, healthM, manaM, defenceM, attackM); //M = Monster
-			*/
+			Skeleton skele = new Skeleton ();
+			Wraith Boss = new Wraith ();
 
 			const int player_start_cap = 180;
 			Player p1 = new Player ("Default Player", 0, 0, 0, 0, 0, player_start_cap);
@@ -108,11 +87,14 @@ namespace Dungeon_Game
 
 			string nameP = p1.name = System.Security.Principal.WindowsIdentity.GetCurrent ().Name;
 
+			//UP TO HERE 20/02/17 
+			/*
+			 * CODE REFACTORING
+			*/
 			int healthP = p1.health = 30;
 			int manaP = p1.mana = 5;
 			int defenceP = p1.defence = 0;
 			int attackP = p1.attack = 10;
-			//int cap = p1.cap;
 			p1.xp = 1;
 			int xpP = p1.xp;
 			//int start_xpP = xpP;
@@ -222,8 +204,7 @@ namespace Dungeon_Game
 			bool canMove = p1.check_move (player_int_cords, map, tempKeyInfo);
 			char item = ' ';
 
-			SoundPlayer mainTheme = new SoundPlayer ();
-			mainTheme.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "8bit Dungeon Music.wav";
+			Music mainTheme = new Music("8bit Dungeon Music.wav");
 
 			Console.ForegroundColor = ConsoleColor.Red;
 			Console.WriteLine ("MAP");
@@ -279,7 +260,7 @@ namespace Dungeon_Game
 			}
 
 			//prints map
-			int torchLight = 5;
+			int torchLight = 4;
 
 			/*************
 			 *     ^     *
@@ -297,27 +278,62 @@ namespace Dungeon_Game
 			 */
 
 			bool squareIsVisible = true;
-			bool[,] mapVisible = new bool[50, 50];
+			//bool[,] mapVisible = new bool[50, 50];
+			bool[,] tempMapVisible = new bool[50, 50];
+			int lightsDistanceFromXBoundary = 0;
+			int lightsDistanceFromYBoundary = 0;
 
-			if (((player_int_cords [0, 0] < 44) && (player_int_cords [1, 1] < 44))
-			    || ((player_int_cords [0, 0] > 4) && (player_int_cords [1, 1] > 4))) {
-				for (int e = player_int_cords [0, 0] - 4; e < player_int_cords [0, 0] + 4; e++) {
-					for (int f = player_int_cords [1, 1] - 4; f < player_int_cords [1, 1] + 4; f++) {
+			//FIXME *
+			/*for (int k = 0; k < 50; k++) {
+				for (int l = 0; l < 50; l++) {
+					squareIsVisible = false;
+					mapVisible [k, l] = squareIsVisible;
+				}
+			}*/
+
+			for (int k = 0; k < 50; k++) {
+				for (int l = 0; l < 50; l++) {
+					squareIsVisible = false;
+					tempMapVisible [k, l] = squareIsVisible;
+				}
+			}
+
+			lightsDistanceFromXBoundary = player_int_cords[0,0] - torchLight;
+			lightsDistanceFromYBoundary = player_int_cords [1, 1] - torchLight;
+
+			if ((lightsDistanceFromXBoundary > -1) && (lightsDistanceFromYBoundary > -1))
+			{
+				for (int e = (player_int_cords [0, 0] - torchLight); e < (player_int_cords [0, 0] + torchLight); e++) {
+					for (int f = (player_int_cords [1, 1] - torchLight); f < (player_int_cords [1, 1] + torchLight); f++) {
 						//assign visibleSquares array around player square visible = true;
-						mapVisible [e, f] = squareIsVisible;
+						try {
+							squareIsVisible = true;
+							tempMapVisible [e, f] = squareIsVisible;
+						}
+						catch (IndexOutOfRangeException er) {
+							continue;
+						}
 					}
 				}
 			} 
 			else 
 			{
-				for (int e = player_int_cords [0, 0]; (e >= -3) && (e < 50); e++) {
-					for (int f = player_int_cords [1, 1]; (f >= -3) && (f < 50); f++) {
-						squareIsVisible = false;
-						mapVisible [e, f] = squareIsVisible;
+				if ((lightsDistanceFromXBoundary > -1 - torchLight) && (lightsDistanceFromYBoundary > -1 - torchLight)) {
+					for (int e = (player_int_cords [0, 0]); e < 0; e--) {
+						for (int f = (player_int_cords [1, 1]); f < 0; f--) {
+							try {
+								squareIsVisible = true;
+								tempMapVisible [e, f] = squareIsVisible;
+							}
+							catch (IndexOutOfRangeException er) {
+								continue;
+							}
+						}
 					}
 				}
-			}
+			}	
 
+			//*
 			int c = 0;
 			for (int x = 0; x < 50; x++) {
 
@@ -329,7 +345,7 @@ namespace Dungeon_Game
 						Console.Write (map [x, y]);
 					} else {
 
-						if (mapVisible[x,y] == true) {
+						if (tempMapVisible[x,y] == true) {
 							switch (map [x, y]) {
 							case 'X':
 								Console.ForegroundColor = ConsoleColor.Red;
@@ -390,7 +406,7 @@ namespace Dungeon_Game
 			if (musicOn == true) 
 			{
 				var timer = new System.Threading.Timer (
-				e => mainTheme.Play (),  
+					e => mainTheme.playMusic(),  
 				null, 
 				TimeSpan.Zero, 
 				TimeSpan.FromMinutes (4));
@@ -424,9 +440,10 @@ namespace Dungeon_Game
 							
 						case '2':
 							Console.WriteLine();
-							SoundPlayer openingBackpack = new SoundPlayer();
-							openingBackpack.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "openingBackpack.wav";
-							openingBackpack.Play();
+							SoundEffects backpack = new SoundEffects("openingBackpack.wav");
+							backpack.playSFX();
+							backpack = null;
+							GC.Collect ();
 							player_items = p1.player_items_equiped(player_items,playerBackpack,p1);
 							break;
 							
@@ -503,31 +520,27 @@ namespace Dungeon_Game
 						}*/
 					}
 
-
+			//resets the temp light map before moving
+				for (int k = 0; k < 50; k++) {
+					for (int l = 0; l < 50; l++) {
+						squareIsVisible = false;
+						tempMapVisible [k, l] = squareIsVisible;
+					}
+				}
 			player_string_cords = p1.get_player_cords_s(map);
 			Console.WriteLine (player_string_cords); /*<--- for debugging only*/
 			player_int_cords = p1.get_player_cords(map);
 				
-					if (((player_int_cords [0, 0] < 44) && (player_int_cords [1, 1] < 44))
-						|| ((player_int_cords [0, 0] > 4) && (player_int_cords [1, 1] > 4))) {
-				for (int e = player_int_cords [0, 0] - 4; e < player_int_cords [0, 0] + 4; e++) 
-				{
-					for (int f = player_int_cords [1, 1] - 4; f < player_int_cords [1, 1] + 4; f++) 
-					{
-						//assign visibleSquares array around player square visible = true;
-						mapVisible[e,f] = squareIsVisible;
-					}
-				}
-					}
-					else
-					{
-					for (int e = player_int_cords [0, 0]; (e >= 0) && (e < 50); e++) {
-						for (int f = player_int_cords [1, 1]; (f >= 0) && (f < 50); f++) {
-							squareIsVisible = false;
+				/*if (((player_int_cords [0, 0] < 50-torchLight) && (player_int_cords [1, 1] < 50-torchLight))
+					&& ((player_int_cords [0, 0] - torchLight > -1) && (player_int_cords [1, 1] - torchLight >  -1))) {
+					for (int e = player_int_cords [0, 0] - torchLight; e < player_int_cords [0, 0] + torchLight; e++) {
+						for (int f = player_int_cords [1, 1] - torchLight; f < player_int_cords [1, 1] + torchLight; f++) {
+							//assign visibleSquares array around player square visible = true;
 							mapVisible [e, f] = squareIsVisible;
 						}
 					}
-					}
+				}*/			
+					
 			//Console.WriteLine("({0}, {1})",player_int_cords[0,0],player_int_cords[1,1]);  /*<--- for debugging only*/
 
 			/*if (map[player_int_cords[0,0],player_int_cords[1,1]] == '*')
@@ -544,6 +557,48 @@ namespace Dungeon_Game
 				}*/
 				item = p1.move(canMove,map,player_int_cords,keyInfo);
 
+				//FIXME
+				lightsDistanceFromXBoundary = player_int_cords[0,0] - torchLight;
+				lightsDistanceFromYBoundary = player_int_cords [1, 1] - torchLight;
+
+				if ((lightsDistanceFromXBoundary > -1) && (lightsDistanceFromYBoundary > -1))
+				{
+					for (int e = (player_int_cords [0, 0] - torchLight); e < (player_int_cords [0, 0] + torchLight); e++) {
+						for (int f = (player_int_cords [1, 1] - torchLight); f < (player_int_cords [1, 1] + torchLight); f++) {
+							//assign visibleSquares array around player square visible = true;
+							try {
+							squareIsVisible = true;
+							tempMapVisible [e,f] = squareIsVisible;
+							//mapVisible [e, f] = tempMapVisible[e,f];
+							}
+							catch (IndexOutOfRangeException er) {
+								continue;
+							}
+						}
+					}
+				} 
+				else 
+				{
+					if ((lightsDistanceFromXBoundary > -1 - torchLight) && (lightsDistanceFromYBoundary > -1 - torchLight)) {
+						squareIsVisible = true;
+						for (int e = (player_int_cords [0, 0]); e < 0; e--) {
+							for (int f = player_int_cords [1, 1]; f < 0; f--) {
+								try {
+									squareIsVisible = true;
+									tempMapVisible [e,f] = squareIsVisible;
+									//mapVisible [e, f] = tempMapVisible[e,f];
+								}
+								catch (IndexOutOfRangeException er) {
+									continue;
+								}
+							}
+						}
+					}
+				}	
+				//*
+				/*BUG: 
+				 * Turns black in the corners of the map
+				*/
 				switch (item)
 				{
 
@@ -617,9 +672,10 @@ namespace Dungeon_Game
 								break;
 
 							case ConsoleKey.D2:
-								SoundPlayer openingBackpack = new SoundPlayer();
-								openingBackpack.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "openingBackpack.wav";
-								openingBackpack.Play();
+								SoundEffects backpack = new SoundEffects("openingBackpack.wav");
+								backpack.playSFX();
+								backpack = null;
+								GC.Collect ();
 								player_items = p1.player_items_equiped(player_items,playerBackpack,p1);
 								break;
 
@@ -660,9 +716,9 @@ namespace Dungeon_Game
 													break;
 
 						case "equip items": case "equip":
-													SoundPlayer openingBackpack = new SoundPlayer();
-													openingBackpack.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "openingBackpack.wav";
-													openingBackpack.Play();
+													SoundEffects backpack = new SoundEffects("openingBackpack.wav");
+													backpack.playSFX();
+													backpack = null;
 													player_items = p1.player_items_equiped(player_items,playerBackpack,p1);
 													break;
 						case "print worn items": case "worn items":
@@ -786,7 +842,7 @@ namespace Dungeon_Game
 					}
 					else
 					{
-									if (mapVisible[x,y] == true) {
+									if (tempMapVisible[x,y] == true) {
 						switch (map[x,y])
 						{
 							case 'X':
@@ -843,7 +899,8 @@ namespace Dungeon_Game
 
 			Console.ReadLine();
 
-			mainTheme.Stop();
+			mainTheme = null;
+			GC.Collect ();
 		}
 	}
 }
