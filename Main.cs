@@ -91,72 +91,13 @@ namespace Dungeon_Game
 			/*
 			 * CODE REFACTORING
 			*/
-			int healthP = p1.health = 30;
-			int manaP = p1.mana = 5;
-			int defenceP = p1.defence = 0;
-			int attackP = p1.attack = 10;
+			
 			p1.xp = 1;
 			int xpP = p1.xp;
-			//int start_xpP = xpP;
-			//int xp_to_lvl_main = p1.get_XP_for_next_level ();
+			
 
 			Console.WriteLine ("\nWelcome {0} !", nameP);
-
-			for (int j = 0; j < 5; j++) { //cycles through and assigns local player stats random values from the Player get_stats function
-				switch (j) {
-				case 1:
-					healthP = p1.health = p1.get_stats (j);
-					break;
-				case 2:
-					manaP = p1.mana = p1.get_stats (j);
-					break;
-				case 3:
-					defenceP = p1.defence = p1.get_stats (j);
-					break;
-				case 4:
-					attackP = p1.attack = p1.get_stats (j);
-					break;
-
-				}
-			}
-
-			for (int k = 0; k < 5; k++) { //cycles through and assigns skeleton stats random values from the Skeleton get_stats function
-				switch (k) {
-				case 1:
-					skele.health = skele.get_stats (k);
-					break;
-				case 2:
-					skele.mana = skele.get_stats (k);
-					break;
-				case 3:
-					skele.defence = skele.get_stats (k);
-					break;
-				case 4:
-					skele.attack = skele.get_stats (k);
-					break;
-					
-				}
-			}
-
-			for (int l = 0; l < 5; l++) { //cycles through and assigns skeleton stats random values from the Skeleton get_stats function
-				switch (l) {
-				case 1:
-					Boss.health = Boss.boss1_stats (l);
-					break;
-				case 2:
-					Boss.mana = Boss.boss1_stats (l);
-					break;
-				case 3:
-					Boss.defence = Boss.boss1_stats (l);
-					break;
-				case 4:
-					Boss.attack = Boss.boss1_stats (l);
-					break;
-					
-				}
-			}
-
-
+				
 			Console.WriteLine ("A player called {0} with:\n" +
 				"\n{1} HP" +
 				"\n{2} MP" +
