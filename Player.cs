@@ -270,7 +270,7 @@ namespace Players
 				
 				else if ((keyInfo.Key != ConsoleKey.UpArrow) && (keyInfo.Key != ConsoleKey.RightArrow) && (keyInfo.Key != ConsoleKey.DownArrow) && (keyInfo.Key != ConsoleKey.LeftArrow)) 
 				{
-					Console.WriteLine ("You cannot move in this direction.");
+					//Console.WriteLine ("You cannot move in this direction.");
 				}
 			}
 			//Console.WriteLine(canMove); //for debugging
@@ -832,12 +832,10 @@ namespace Players
 		public Player (string itsName, int itsHealth, int itsMana, int itsDefence, int itsAttack,int itsXP, int itsCap)
 		{
 			name = itsName;
-			health = itsHealth;
-			mana = itsMana;
-			defence = itsDefence;
-			attack = itsAttack;
-			xp = itsXP;
-			cap = itsCap;
+			health = get_stats (1);
+			mana = get_stats (2);
+			defence = get_stats (3);
+			attack = get_stats (4);
 		}
 
 		/*public void displayPlayerItems()

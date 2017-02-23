@@ -79,7 +79,7 @@ namespace Items
 
 		public Container throw_away_items (Container itsBackpack) //still needs to be implemented
 		{
-			string response = "";
+			//string response = "";
 			int x = 0;
 			/*Console.WriteLine ("\nWould you like to throw away items from your backpack? ");
 

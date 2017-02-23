@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Text;
+using DungeonMap;
 
 namespace Dungeons
 {
@@ -192,11 +193,11 @@ namespace Dungeons
 			else return dmg_takenM; // will return 0
 		}
 
-		public decimal getPlayer_XP (int hp_statM, int def_statP, int atk_statM)
+		/*public decimal getPlayer_XP (int hp_statM, int def_statP, int atk_statM) //broken in current version
 		{
 			decimal XP = ( hp_statM / (atk_statM - def_statP) ) + hp_statM;
 			return Math.Truncate(XP);
-		}
+		}*/
 
 		public string generate_loot ()
 		{
@@ -206,7 +207,12 @@ namespace Dungeons
 			return loot[loot_roll];
 		}
 
-		public int Fight (Skeleton itsSkeleton, Player itsP1, int itsStartHealthP, int its_levels_advanced)
+		static public void printFight (string arg, ScreenBuffer itsBuffer) //TODO
+		{
+			
+		}
+
+		public int Fight (Skeleton itsSkeleton, Player itsP1, int itsStartHealthP, int its_levels_advanced, ScreenBuffer itsBuffer)
 		{
 			int dmg_dealtP = 0;
 			int dmg_takenM = 0;
@@ -215,12 +221,23 @@ namespace Dungeons
 			int dmg_takenP = 0;
 			int tempLvl = 0;
 
-			int xp_to_lvl_main = itsP1.get_XP_for_next_level ();
-			int xp_gained = Convert.ToInt32 (getPlayer_XP (itsSkeleton.health, itsP1.defence, itsSkeleton.attack));
-
+			//*
+			//int xp_to_lvl_main = itsP1.get_XP_for_next_level ();
+			//int xp_gained = Convert.ToInt32 (getPlayer_XP (itsSkeleton.health, itsP1.defence, itsSkeleton.attack));
+			//broken in current version
 			string chosen_attack_ability = "";
 
+			/*string flush = string.Empty;
+			for (int i = 0; i < 49; i++) {
+					flush += "\n";
+
+			}
+			ScreenBuffer.Draw (flush, 0, 0);
+			ScreenBuffer.DrawScreen ();
+
+			ScreenBuffer.Draw ("\nFIGHT!\n", 0, 0);*/
 			Console.WriteLine ("\nFIGHT!\n");
+			//printFight("init", itsBuffer);
 			do {
 
 				skeleton_Fight_Scene();
@@ -248,6 +265,7 @@ namespace Dungeons
 						
 						else if (itsP1.health < 0)
 						{
+							Console.ReadLine();
 							Console.WriteLine ("You died!");
 							Console.WriteLine ("Game over!");
 							System.Environment.Exit (1);
@@ -285,6 +303,7 @@ namespace Dungeons
 						
 						else if (itsP1.health < 0)
 						{
+							Console.ReadLine();	
 							Console.WriteLine ("You died!");
 							Console.WriteLine ("Game over!");
 							System.Environment.Exit (1);
@@ -345,10 +364,11 @@ namespace Dungeons
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.Write(" {0} HP",itsP1.health);
 				m.reset_colours();
-				Console.WriteLine ("\nYou gained {0} XP.", xp_gained);
+					/*
+				//Console.WriteLine ("\nYou gained {0} XP.", xp_gained);
 
-				itsP1.xp += xp_gained;
-
+				//itsP1.xp += xp_gained;
+					*/ //broken in current version
 					/*if ((itsP1.xp >= 162) || (itsP1.xp >= 477) || (itsP1.xp >= 989) || (itsP1.xp >= 1743)) //bugged
 					{
 						tempLvl = itsP1.xp_lvl;
@@ -389,9 +409,9 @@ namespace Dungeons
 						itsP1.health = itsStartHealthP;
 						Console.WriteLine("Congratulations you advanced from level {0} to level {1}.",tempLvl,itsP1.xp_lvl);
 					}
-				xp_to_lvl_main = itsP1.get_XP_for_next_level ();
+				//xp_to_lvl_main = itsP1.get_XP_for_next_level (); //*broken in current version
 				
-				Console.WriteLine ("You currently have {0} XP and need {1} XP to progress to the next level.", itsP1.xp, xp_to_lvl_main);
+				//Console.WriteLine ("You currently have {0} XP and need {1} XP to progress to the next level.", itsP1.xp, xp_to_lvl_main); //*
 				//Console.WriteLine ("You looted a {0}, from {1}.", monster_loot, nameM);
 			}
 			} while (itsSkeleton.health > 0); 
@@ -436,7 +456,7 @@ namespace Dungeons
 			int tempLvl = 0;
 			
 			int xp_to_lvl_main = itsP1.get_XP_for_next_level ();
-			int xp_gained = Convert.ToInt32 (getPlayer_XP (itsWraith.health, itsP1.defence, itsWraith.attack));
+			//int xp_gained = Convert.ToInt32 (getPlayer_XP (itsWraith.health, itsP1.defence, itsWraith.attack)); //broken in current version
 			
 			string chosen_attack_ability = "";
 			
@@ -467,6 +487,7 @@ namespace Dungeons
 					
 					else if (itsP1.health < 0)
 					{
+						Console.ReadLine();
 						Console.WriteLine ("You died!");
 						Console.WriteLine ("Game over!");
 						System.Environment.Exit (1);
@@ -493,9 +514,9 @@ namespace Dungeons
 					Console.ForegroundColor = ConsoleColor.Red;
 					Console.Write(" {0} HP",itsP1.health);
 					m.reset_colours();
-					Console.WriteLine ("\nYou gained {0} XP.", xp_gained);
+					//Console.WriteLine ("\nYou gained {0} XP.", xp_gained);
 					
-					itsP1.xp += xp_gained;
+					//itsP1.xp += xp_gained;
 					
 					/*if ((itsP1.xp >= 162) || (itsP1.xp >= 477) || (itsP1.xp >= 989) || (itsP1.xp >= 1743)) //bugged
 					{
@@ -664,96 +685,6 @@ namespace Dungeons
 		{
 			itsMap = initialise_Map();
 		}
-	}
-
-	public class ConsoleReader
-	{
-		//source: http://stackoverflow.com/questions/12355378/read-from-location-on-console-c-sharp
-		public static IEnumerable<string> ReadFromBuffer(short x, short y, short width, short height)
-		{
-			IntPtr buffer = Marshal.AllocHGlobal(width * height * Marshal.SizeOf(typeof(CHAR_INFO)));
-			if (buffer == null)
-				throw new OutOfMemoryException();
-			
-			try
-			{
-				COORD coord = new COORD();
-				SMALL_RECT rc = new SMALL_RECT();
-				rc.Left = x;
-				rc.Top = y;
-				rc.Right = (short)(x + width - 1);
-				rc.Bottom = (short)(y + height - 1);
-				
-				COORD size = new COORD();
-				size.X = width;
-				size.Y = height;
-				
-				const int STD_OUTPUT_HANDLE = -11;
-				if (!ReadConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), buffer, size, coord, ref rc))
-				{
-					// 'Not enough storage is available to process this command' may be raised for buffer size > 64K (see ReadConsoleOutput doc.)
-					throw new Win32Exception(Marshal.GetLastWin32Error());
-				}
-				
-				IntPtr ptr = buffer;
-				for (int h = 0; h < height; h++)
-				{
-					StringBuilder sb = new StringBuilder();
-					for (int w = 0; w < width; w++)
-					{
-						CHAR_INFO ci = (CHAR_INFO)Marshal.PtrToStructure(ptr, typeof(CHAR_INFO));
-						char[] chars = Console.OutputEncoding.GetChars(ci.charData);
-						sb.Append(chars[0]);
-						ptr += Marshal.SizeOf(typeof(CHAR_INFO));
-					}
-					yield return sb.ToString();
-				}
-			}
-			finally
-			{
-				Marshal.FreeHGlobal(buffer);
-			}
-		}
-		
-		[StructLayout(LayoutKind.Sequential)]
-		private struct CHAR_INFO
-		{
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-			public byte[] charData;
-			public short attributes;
-		}
-		
-		[StructLayout(LayoutKind.Sequential)]
-		private struct COORD
-		{
-			public short X;
-			public short Y;
-		}
-		
-		[StructLayout(LayoutKind.Sequential)]
-		private struct SMALL_RECT
-		{
-			public short Left;
-			public short Top;
-			public short Right;
-			public short Bottom;
-		}
-		
-		[StructLayout(LayoutKind.Sequential)]
-		private struct CONSOLE_SCREEN_BUFFER_INFO
-		{
-			public COORD dwSize;
-			public COORD dwCursorPosition;
-			public short wAttributes;
-			public SMALL_RECT srWindow;
-			public COORD dwMaximumWindowSize;
-		}
-		
-		[DllImport("kernel32.dll", SetLastError = true)]
-		private static extern bool ReadConsoleOutput(IntPtr hConsoleOutput, IntPtr lpBuffer, COORD dwBufferSize, COORD dwBufferCoord, ref SMALL_RECT lpReadRegion);
-		
-		[DllImport("kernel32.dll", SetLastError = true)]
-		private static extern IntPtr GetStdHandle(int nStdHandle);
 	}
 }
 

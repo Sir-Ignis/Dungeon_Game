@@ -2,6 +2,9 @@ using System;
 using System.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MainMenu
 {
@@ -65,7 +68,7 @@ namespace MainMenu
 
 			x = Convert.ToInt32(Math.Truncate(24M/2));
 			centre(x);
-			Console.WriteLine ("ARX LUDUS © - VERSION 0.4.8"); //0 = Alpha
+			Console.WriteLine ("ARX LUDUS © - VERSION 0.5.1"); //0 = Alpha
 
 			/*Version code
 			 * X.Y.Z
@@ -101,6 +104,11 @@ namespace MainMenu
 			centre (x);
 
 			Console.WriteLine ("HELP");
+
+			x = Convert.ToInt32(Math.Truncate(4M/2));
+			centre (x);
+
+			Console.WriteLine ("CREDITS");
 
 			x = Convert.ToInt32(Math.Truncate(4M/2));
 			centre (x);
@@ -203,6 +211,77 @@ namespace MainMenu
 			Console.BackgroundColor = ConsoleColor.Black;
 			Console.ForegroundColor = ConsoleColor.White;
 		}
+
+		static void ConsoleDraw(IEnumerable<string> lines, int x, int y)
+		{
+			if (x > Console.WindowWidth) return;
+			if (y > Console.WindowHeight) return;
+
+			var trimLeft = x < 0 ? -x : 0;
+			int index = y;
+
+			x = x < 0 ? 0 : x;
+			y = y < 0 ? 0 : y;
+
+			var linesToPrint =
+				from line in lines
+				let currentIndex = index++
+					where currentIndex > 0 && currentIndex < Console.WindowHeight
+				select new {
+				Text = new String(line.Skip(trimLeft).Take(Math.Min(Console.WindowWidth - x, line.Length - trimLeft)).ToArray()),
+				X = x,
+				Y = y++
+			};
+
+			Console.Clear();
+			foreach (var line in linesToPrint)
+			{
+				Console.SetCursorPosition(line.X, line.Y);
+				Console.Write(line.Text);
+			}
+		}
+
+
+		public void print_credits() //TODO
+		{
+			Console.CursorVisible = false;
+
+			var arr = new[] {
+				@"CREDITS",
+				@"",
+				@"",
+				@"CODE",
+				@"",
+				@">Daniel",
+				@"",
+				@"",
+				@"DESIGN",
+				@"",
+				@">Daniel",
+				@"",
+				@"",
+				@"TESTERS",
+				@"",
+				@">Nick",
+				@">George",
+				@">Daniel",
+				@"",
+				@"ASCII ART",
+				@"",
+				@">jgs",
+
+			};
+			var maxLength = arr.Aggregate(0, (max, line) => Math.Max(max, line.Length));
+			var x = Console.BufferWidth/2 - maxLength/2;
+			for (int y = -arr.Length; y < Console.WindowHeight + arr.Length; y++)
+			{
+				ConsoleDraw(arr, x, y);
+				Thread.Sleep(100);
+			}
+
+		}
+
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MainMenu.Menu"/> class.
 		/// </summary>

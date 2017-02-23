@@ -7,11 +7,11 @@ namespace genericFunctions
 		public char genericKeyInput (int optionsType)
 		{
 			string startMessage =  "Press the";
-			string exitHelpStartS = "'E'/'H'/'S' key for";
-			string exitHelpStartL = "exit/help/start";
+			string exitHelpStartS = "'E'/'C'/'H'/'S' key for";
+			string exitHelpStartL = "exit/credits/help/start";
 
-			string actionsMenuS = "'0'/'1'/'2'/'3'/'4' for";
-			string actionsMenuL = "backpack (0), throw away (1) or equip items (2), print worn items (3) or stats (4)";
+			string actionsMenuS = "'0'/'1'/'2'/'3'/'4'/'5' for";
+			string actionsMenuL = "backpack (0), throw away (1) or equip items (2), print worn items (3) or stats (4), exit (5)";
 
 			ConsoleKeyInfo itsKeyInfo;
 			char keyPressed = ' ';
@@ -27,7 +27,7 @@ namespace genericFunctions
 					itsKeyInfo = Console.ReadKey();
 					keyPressed = (char)itsKeyInfo.Key;
 				}
-				while ((itsKeyInfo.Key != ConsoleKey.E) && (itsKeyInfo.Key != ConsoleKey.H) && (itsKeyInfo.Key != ConsoleKey.S));
+				while ((itsKeyInfo.Key != ConsoleKey.E) && (itsKeyInfo.Key != ConsoleKey.C) && (itsKeyInfo.Key != ConsoleKey.H) && (itsKeyInfo.Key != ConsoleKey.S));
 				break;
 			
 			case 3: //0/1/2/3/4 => optionsType == 3
@@ -39,7 +39,7 @@ namespace genericFunctions
 					keyPressed = (char)itsKeyInfo.Key;
 				}
 				while ((itsKeyInfo.Key != ConsoleKey.D0) && (itsKeyInfo.Key != ConsoleKey.D1) 
-				       && (itsKeyInfo.Key != ConsoleKey.D2) && (itsKeyInfo.Key != ConsoleKey.D3) && (itsKeyInfo.Key != ConsoleKey.D4));
+					&& (itsKeyInfo.Key != ConsoleKey.D2) && (itsKeyInfo.Key != ConsoleKey.D3) && (itsKeyInfo.Key != ConsoleKey.D4)&& (itsKeyInfo.Key != ConsoleKey.D5));
 				break;
 	
 			default: //y/n => optionsType == 0
