@@ -10,6 +10,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.IO;
 using genericFunctions;
+using System.Media;
 
 namespace Dungeon_Game
 {
@@ -20,10 +21,21 @@ namespace Dungeon_Game
 			Console.CursorVisible = false;
 			Random rand = new Random ();
 			Menu m = new Menu ();
+			Console.Clear ();
+			m.printWelcome ();
+			//Thread.Sleep (5000); //<--- remove when coding
 			Music menuMusic = new Music ("Dungeon_Ambience_Music.wav");
+			SFX sfx = new SFX ();
+		/*
+			SoundPlayer sp = new SoundPlayer ();
+			sp.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "Blip_Select.wav";
+			sp.Play();*/
+
 			menuMusic.playMusic ();
 
 			string response = "";
+			string gameMode = string.Empty;
+
 			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 				m.Maximize ();
 			}
@@ -38,11 +50,20 @@ namespace Dungeon_Game
 			{
 			m.print_Menu ();
 			readChar = g.genericKeyInput (2);
-
+				sfx.optionSelected();
 
 			switch (readChar) 
 			{
 			case 'S':
+				readChar = g.genericKeyInput(1);
+					if (readChar == 'N')
+					{
+						gameMode = "normal";
+					}
+					else //readChar == 'A'
+					{
+						gameMode = "admin";
+					}
 				Console.Clear ();
 				break;
 			
@@ -50,9 +71,15 @@ namespace Dungeon_Game
 				m.printHelp();
 				Console.WriteLine ("\nPress any key to return to the main menu...");
 				Console.ReadKey();
+				sfx.optionSelected();
 				Console.Clear();
 				break;
 			case 'E':
+				Thread.Sleep(1000);
+				Console.Clear();
+				menuMusic = null;
+				sfx = null;
+				GC.Collect();
 				System.Environment.Exit (1);
 				break;
 			
@@ -60,10 +87,11 @@ namespace Dungeon_Game
 					m.print_credits();
 					Console.WriteLine ("\nPress any key to return to the main menu...");
 					Console.ReadKey();
+					sfx.optionSelected();
 					Console.Clear();
 					break;
 			}
-			} while ((readChar != 'S') && (readChar != 'E'));
+			} while ((readChar != 'S') && (readChar != 'N') && (readChar != 'A') && (readChar != 'E'));
 
 			bool musicOn = true;
 
@@ -129,7 +157,10 @@ namespace Dungeon_Game
 			int [,] player_int_cords = p1.get_player_cords (lMap);
 			ScreenBuffer sb = new ScreenBuffer ();
 			ScreenBuffer.setCursorPosition (0, 0);
+
+			Console.WriteLine ("\nPress any key to continue...");
 			tempKeyInfo = Console.ReadKey ();
+
 			Armor chest_armor_loot = new Armor ("", 0, 0);
 			Weapon chest_weapon_loot = new Weapon ("", 0, 0);
 			bool item_looted = false;
@@ -155,21 +186,37 @@ namespace Dungeon_Game
 			Console.WriteLine ("MAP");
 			m.reset_colours ();
 
+			int torchLight = 5;
 			string admin_password = "20H4CKER17";
-			
-			Console.Write ("\n\n\nAdmin password:");
-			response = Console.ReadLine ();
+			if (gameMode == "admin") {
+				Console.Write ("\n\n\nAdmin password:");
+				response = Console.ReadLine ();
 
-			if (response == admin_password) {
-				//int l = 0;
-				p1.attack = 100;
+				if (response == admin_password) {
+					//int l = 0;
+					p1.attack = 1000;
 
-				ScreenBuffer.Draw (sMap, 0, 0);
-				ScreenBuffer.DrawScreen ();
+					ScreenBuffer.Draw (sMap, 0, 0);
+					ScreenBuffer.DrawScreen ();
 
-				D1.monsters_left = 0;
-				lMap = D1.spawn_boss (lMap);
-				Console.Clear();
+					map.c_monsters_left = 0;
+					torchLight = 50;
+					int c = 0;
+					for (int r = 0; r < 50; r++) {
+						for (int s = 0; s < 50; s++) {
+							if (lMap [r, s] == 'M') {
+								lMap [r, s] = '.';
+								sMap += lMap [r, s];
+							}
+							if (t % 50 == 0) {
+								sMap += '\n';
+								sMap += lMap[r,s];
+							}
+							c++;
+						}
+					}
+					Console.Clear ();
+				}
 			}
 
 			//prints map
@@ -190,7 +237,6 @@ namespace Dungeon_Game
 			 *************
 			 */
 
-			int torchLight = 5;
 
 			bool squareIsVisible = true;
 			bool[,] tempMapVisible = new bool[50, 50];
@@ -211,9 +257,16 @@ namespace Dungeon_Game
 			}
 				
 			Console.Clear ();
+
 			//ScreenBuffer bufferN = new ScreenBuffer ();
+
 			do //Main "Game Loop" starts here
 			{
+				if ((map.c_monsters_left == 0) && (map.bosses_spawned == 0))
+				{
+					map.bosses_spawned += 1;
+					map.spawn_boss(map.cMap);
+				}
 				for (int l = 0; l < 50; l++) {
 					for (int k = 0; k < 50; k++) {
 						squareIsVisible = false;
@@ -260,13 +313,20 @@ namespace Dungeon_Game
 
 				ScreenBuffer.Draw(sMap,0,0);
 				ScreenBuffer.DrawScreen();
+				//map.draw_map(sb);
 
-				Console.Write ("\n\nUser: ");
+				/*for (int iny = 0; iny < 50; iny++)
+				{
+					Console.Write("\n");
+				}*/
+
+				Console.Write ("\nUser: ");
 				ConsoleKeyInfo keyInfo = Console.ReadKey();
 				if (keyInfo.Key == ConsoleKey.M)
 				{
 						Console.WriteLine("\n\n\n");
 						readChar = g.genericKeyInput(3);
+						sfx.optionSelected();
 						switch (readChar)
 						{
 						case '0':
@@ -281,7 +341,7 @@ namespace Dungeon_Game
 
 						case '1':
 							Console.WriteLine();
-							playerBackpack = playerBackpack.throw_away_items(playerBackpack);
+							playerBackpack = playerBackpack.throw_away_items(playerBackpack); //need to fix bug by adding error checking
 							break;
 							
 						case '2':
@@ -316,6 +376,12 @@ namespace Dungeon_Game
 							break;
 							
 						case '5':
+							Thread.Sleep(1000);
+							menuMusic = null;
+							sfx = null;
+							mainTheme = null;
+							GC.Collect();
+							Console.Clear();
 							System.Environment.Exit (1);
 							break;
 							
@@ -342,6 +408,9 @@ namespace Dungeon_Game
 					break;
 					
 				case 'C':
+					Console.Clear(); //temporary solution find a better one
+					ScreenBuffer.Draw(sMap,0,0);
+					ScreenBuffer.DrawScreen();
 					Console.WriteLine();
 					Coin = rand.Next (1,3);
 
@@ -366,8 +435,9 @@ namespace Dungeon_Game
 
 					
 				case 'B':
-					D1.boss_slain = true;
 					levelsAdvanced = D1.Boss_Fight(Boss,p1,startHealthP,levelsAdvanced);
+					map.boss_slain = true;
+					map.spawn_stairs(map.cMap);
 					lMap[player_int_cords[0,0],player_int_cords[1,1]] = 'X';
 					lMap = D1.spawn_stairs(lMap);
 					break;

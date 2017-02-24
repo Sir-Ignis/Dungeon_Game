@@ -36,10 +36,34 @@ namespace Sound
 			soundEffectsPlayer.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + pathToMusic;
 		}
 
+		public void optionSelected()
+		{
+			System.Media.SystemSounds.Asterisk.Play();
+		}
+
 		~SoundEffects()
 		{
 			soundEffectsPlayer.Stop ();
 			soundEffectsPlayer.Dispose ();
+		}
+	}
+
+	public class SFX
+	{
+		public SoundPlayer SFX_player = new SoundPlayer();
+		public SFX()
+		{
+		}
+
+		public void optionSelected()
+		{
+			System.Media.SystemSounds.Asterisk.Play();
+		}
+
+		~SFX()
+		{
+			SFX_player.Stop ();
+			SFX_player.Dispose ();
 		}
 	}
 }

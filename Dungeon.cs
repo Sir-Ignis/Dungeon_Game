@@ -214,6 +214,14 @@ namespace Dungeons
 
 		public int Fight (Skeleton itsSkeleton, Player itsP1, int itsStartHealthP, int its_levels_advanced, ScreenBuffer itsBuffer)
 		{
+			//TODO
+			/*
+			 * Add validation to the get key when getting the players attack
+			 * prevents infinite loop
+			 * 
+			 * 
+			 * 
+			*/
 			int dmg_dealtP = 0;
 			int dmg_takenM = 0;
 			
@@ -564,7 +572,8 @@ namespace Dungeons
 					//Console.WriteLine ("You looted a {0}, from {1}.", monster_loot, nameM);
 				}
 			} while (itsWraith.health > 0); 
-			
+			Thread.Sleep (5000);
+			Console.Clear ();
 			return its_levels_advanced;
 		}
 
@@ -625,15 +634,15 @@ namespace Dungeons
 
 					switch (its_chest_armor_loot.name) {
 					case "Iron dagger":
-						Console.WriteLine ("\nYou looted an {0} from the chest.", its_chest_armor_loot.name);
+						Console.WriteLine ("\n\nYou looted an {0} from the chest.", its_chest_armor_loot.name);
 						break;
 					
 					case "Leather boots":
-						Console.WriteLine ("\nYou looted a pair of {0} from the chest.", its_chest_armor_loot.name);
+						Console.WriteLine ("\n\nYou looted a pair of {0} from the chest.", its_chest_armor_loot.name);
 						break;
 
 					default:
-						Console.WriteLine ("\nYou looted a {0} from the chest.", its_chest_armor_loot.name);
+						Console.WriteLine ("\n\nYou looted a {0} from the chest.", its_chest_armor_loot.name);
 						break;
 					}
 					Console.WriteLine ("You now have {0} oz cap.", itsP1.cap);
@@ -657,7 +666,7 @@ namespace Dungeons
 					playerBackpack = playerBackpack.parse_Backpack(I,playerBackpack);
 					//itsP1.cap = itsP1.cap - its_chest_weapon_loot.weight;
 
-					Console.WriteLine ("\nYou looted {0} from the chest.", its_chest_weapon_loot.name);
+					Console.WriteLine ("\n\nYou looted {0} from the chest.", its_chest_weapon_loot.name);
 					Console.WriteLine ("You now have {0} oz cap.", itsP1.cap);
 					itemLooted = true;
 				}

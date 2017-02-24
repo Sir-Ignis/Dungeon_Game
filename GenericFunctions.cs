@@ -13,11 +13,22 @@ namespace genericFunctions
 			string actionsMenuS = "'0'/'1'/'2'/'3'/'4'/'5' for";
 			string actionsMenuL = "backpack (0), throw away (1) or equip items (2), print worn items (3) or stats (4), exit (5)";
 
+			string gameModeMenuS = "'N'/'A' key for";
+			string gameModeMenuL = "normal game mode/admin game mode";
+
 			ConsoleKeyInfo itsKeyInfo;
 			char keyPressed = ' ';
 			switch (optionsType) {
 
 			//case x: //keyHandled1/keyHandled2/keyHandled3 ... => option x
+
+			case 1: //n/a = > optionsType == 3
+				do {
+					Console.WriteLine ("\n {0} {1} {2}.", startMessage, gameModeMenuS, gameModeMenuL);
+					itsKeyInfo = Console.ReadKey ();
+					keyPressed = (char)itsKeyInfo.Key;
+				} while ((itsKeyInfo.Key != ConsoleKey.N) && (itsKeyInfo.Key != ConsoleKey.A));
+				break;
 
 			case 2: //e/h/s => optionsType == 2
 				do
@@ -53,6 +64,7 @@ namespace genericFunctions
 				while ((itsKeyInfo.Key != ConsoleKey.Y) && (itsKeyInfo.Key != ConsoleKey.N));
 				break;
 			}
+
 			return keyPressed;
 		}
 

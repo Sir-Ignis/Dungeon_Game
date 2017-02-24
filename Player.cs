@@ -417,9 +417,10 @@ namespace Players
 
 				do {
 					Console.Write ("\nUser: ");
-					response = Console.ReadLine ();
+					response = Console.ReadLine();
 				}while ( (response != itemsToEquip[0]) && (response != itemsToEquip[1]) && (response != itemsToEquip[2]) && (response != itemsToEquip[3]) && (response != itemsToEquip[4]) 
 				        && (response != itemsToEquip[4]) && (response != itemsToEquip[5]) && (response != "Nothing"));
+
 
 
 				for (int i = 0; i < items_worn.Length; i++) 
@@ -435,6 +436,8 @@ namespace Players
 						break;
 					}
 				}
+					
+				response = response.ToLower();
 
 				switch (response)
 				{
@@ -447,7 +450,7 @@ namespace Players
 		 * 5				* Shoes
 		 * 6				* Backpack
 		 */
-				case "Leather cowl":
+				case "leather cowl":
 					if (items_worn[0] == "nothing")
 					{
 						items_worn[0] = response;
@@ -460,7 +463,7 @@ namespace Players
 					}
 					break;
 
-				case "Leather armour":
+				case "leather armour":
 					if (items_worn[1] == "nothing")
 					{
 						items_worn[1] = response;
@@ -472,7 +475,7 @@ namespace Players
 					}
 					break;
 
-				case "Iron dagger":
+				case "iron dagger":
 					if (items_worn[2] == "nothing")
 					{
 						items_worn[2] = response;
@@ -484,7 +487,7 @@ namespace Players
 					}
 					break;
 
-				case "Wooden shield":
+				case "wooden shield":
 					if (items_worn[3] == "nothing")
 					{
 						items_worn[3] = response;
@@ -496,7 +499,7 @@ namespace Players
 					}
 					break;
 				
-				case "Leather trousers":
+				case "leather trousers":
 					if (items_worn[4] == "nothing")
 					{
 						items_worn[4] = response;
@@ -508,7 +511,7 @@ namespace Players
 					}
 					break;
 
-				case "Leather shoes":
+				case "leather shoes":
 					if (items_worn[5] == "nothing")
 					{
 						items_worn[5] = response;
@@ -742,7 +745,10 @@ namespace Players
 					break;
 				case ConsoleKey.C:
 					attack_ability = "kick";
-					break;					
+					break;		
+				default: //prevents no damage from being dealt by the player if a random key is held down
+					attack_ability = "punch";
+					break;
 			}
 
 			/*do {
@@ -771,9 +777,7 @@ namespace Players
 					case ConsoleKey.Z:
 						attack_ability = "punch";
 						break;
-					case ConsoleKey.X:
-						attack_ability = "stab";
-						break;
+
 					case ConsoleKey.C:
 						attack_ability = "kick";
 						break;					

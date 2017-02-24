@@ -21,11 +21,12 @@ namespace DungeonMap
 	public class Map
 	{
 		public Random rand = new Random();
-		int monsters_left = 0;
+		public int c_monsters_left = 0;
 
 		public char [,] cMap  = new char[50,50];
 		char player = 'X';
-		bool boss_slain = false;
+		public bool boss_slain = false;
+		public int bosses_spawned = 0;
 
 		//string sMap = " ";
 
@@ -77,7 +78,7 @@ namespace DungeonMap
 							map [x, y] = symbols [0];
 						} else if (r == 1) {
 							map [x, y] = symbols [1];
-							monsters_left++; //increments number of monsters in the dungeon
+							c_monsters_left++; //increments number of monsters in the dungeon
 						} else if (((r >= 2) && (r <= 43)) || ((r >= 46) && (r <= 100))) {
 							map [x, y] = symbols [3];
 						}
@@ -106,7 +107,7 @@ namespace DungeonMap
 
 			//monsters_left = 0; //for testing
 
-			if (monsters_left == 0) {
+			if (c_monsters_left == 0) {
 				do {
 					r = rand.Next (1, 49);
 					s = rand.Next (1, 49);
@@ -129,7 +130,7 @@ namespace DungeonMap
 			/*Console.WriteLine(monsters_left);
 			Console.WriteLine(boss_slain);
 			Thread.Sleep(3000);*/ //for debugging
-			if ((monsters_left == 0) && (boss_slain == true))
+			if ((c_monsters_left == 0) && (boss_slain == true))
 			{
 				do {
 					r = rand.Next (1, 49);
@@ -170,37 +171,40 @@ namespace DungeonMap
 			return map;
 		}
 
-		public void draw_map ()
+		public void draw_map (ScreenBuffer sb)
 		{
 			int i = 0;
-			foreach (char chr in ScreenBuffer.screenBuffer) 
-			{
+			for (int y = 0; y < Game.roomHeight; y++) {
+				for (int x = 0; x < Game.roomWidth; x++) {
+					
 
-				if (i % Game.roomWidth == 50) {
-					Console.WriteLine ();
-				}
-				/*if (tempMapVisible [x, y] == true) {*/ //FIXME
-				switch (ScreenBuffer.screenBuffer[i]) {
-				case 'C':
-					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.Write (ScreenBuffer.screenBuffer[i]);
-					break;
-				case 'M':
-					Console.ForegroundColor = ConsoleColor.Magenta;
-					Console.Write (ScreenBuffer.screenBuffer[i]);
-					break;
-				case 'X':
-					Console.ForegroundColor = ConsoleColor.Red;
-					Console.Write (ScreenBuffer.screenBuffer[i]);
-					break;
-				default:
+					if (i % Game.roomWidth == 50) {
+						Console.WriteLine ();
+					}
+					switch (ScreenBuffer.screenBufferArray [x,y]) {
+					case 'C':
+						Console.ForegroundColor = ConsoleColor.Yellow;
+						Console.Write (ScreenBuffer.screenBufferArray [x,y]);
+						break;
+					case 'M':
+						Console.ForegroundColor = ConsoleColor.Magenta;
+						Console.Write (ScreenBuffer.screenBufferArray [x,y]);
+						break;
+					case 'X':
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.Write (ScreenBuffer.screenBufferArray [x,y]);
+						break;
+					default:
+						Console.ForegroundColor = ConsoleColor.White;
+						Console.Write (ScreenBuffer.screenBufferArray [x,y]);
+						break;
+					}
+					i++;
 					Console.ForegroundColor = ConsoleColor.White;
-					Console.Write (ScreenBuffer.screenBuffer[i]);
-					break;
 				}
-				Console.ForegroundColor = ConsoleColor.White;
-				i++;
 			}
+			Console.SetCursorPosition(0, 0);
+			ScreenBuffer.screenBufferArray = new char[Game.roomWidth, Game.roomHeight];
 		}
 			
 		public Map ()
@@ -258,6 +262,11 @@ namespace DungeonMap
 		{
 			xc = ix;
 			yc = iy;
+		}
+
+		public static void resetBuffer() 
+		{
+			screenBufferArray = new char[Game.roomWidth, Game.roomHeight];
 		}
 
 		public static void DrawScreen()
