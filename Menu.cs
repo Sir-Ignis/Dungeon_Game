@@ -69,7 +69,7 @@ namespace MainMenu
 
 			x = Convert.ToInt32(Math.Truncate(24M/2));
 			centre(x);
-			Console.WriteLine ("ARX LUDUS © - VERSION 0.5.2"); //0 = Alpha
+			Console.WriteLine ("ARX LUDUS © - VERSION 0.5.5"); //0 = Alpha
 
 			/*Version code
 			 * X.Y.Z

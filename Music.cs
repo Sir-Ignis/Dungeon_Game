@@ -23,7 +23,7 @@ namespace Sound
 		}
 	}
 
-	public class SoundEffects //SFX
+	public class SoundEffects 
 	{
 		SoundPlayer soundEffectsPlayer = new SoundPlayer ();
 
@@ -48,7 +48,7 @@ namespace Sound
 		}
 	}
 
-	public class SFX
+	public class SFX //system sound effects
 	{
 		public SoundPlayer SFX_player = new SoundPlayer();
 		public SFX()

@@ -121,8 +121,57 @@ namespace Monsters
 		}
 	}
 
+	class FleshEatingSpider : Monster
+	{
+		public int resetHealth (FleshEatingSpider itsSpider)
+		{
+			if ((itsSpider.health < 0) || (itsSpider.health == 0)) 
+			{
+				int rand_hp = rand.Next (1, 20) + 10;
+				itsSpider.health = rand_hp;
+			}
+			return itsSpider.health;
+		}
+
+		public FleshEatingSpider () : base ()
+		{
+			name = generate_random_name ();
+			health = get_stats (1);
+			mana = get_stats (2);
+			defence = get_stats (3);
+			attack = get_stats (4);
+		}
+
+		public int get_stats (int x)
+		{
+			int rand_hp = rand.Next (1, 20) + 10;
+			int rand_mp = rand.Next (1, 10);
+			int rand_df = rand.Next (1,2);
+			int rand_ak = rand.Next (1, 6) + 10;
+
+
+			switch (x) 
+			{
+			case 1:
+				return rand_hp;
+
+			case 2:
+				return rand_mp;
+
+			case 3:
+				return rand_df;
+
+			case 4:
+				return rand_ak;
+			}
+
+			return 0;
+		}
+	}
+
 	class Wraith : Monster
 	{
+		public Skeleton [] summonedSkeletonsArray;
 		public Wraith () : base ()
 		{
 			name = "Wraith";
@@ -135,7 +184,7 @@ namespace Monsters
 		public int boss1_stats (int x)
 		{
 			int rand_hp = rand.Next (1, 100) + 30;
-			int rand_mp = rand.Next (1, 50) + 5;
+			int rand_mp = rand.Next (1, 50) + 50;
 			int rand_df = rand.Next (1,5);
 			int rand_ak = rand.Next (1, 12) + 4;
 		
@@ -158,7 +207,7 @@ namespace Monsters
 		return 0;
 		}
 
-		public string WraithAttacks () //TO BE IMPLEMENTED
+		public string WraithAttacks () //TO BE IMPLEMENTED (TODO)
 		{
 			int attackTypeRoll = rand.Next (1, 7);
 			string attackName = string.Empty;
@@ -173,13 +222,16 @@ namespace Monsters
 				break;
 
 				case 6:
-				attackName = "summon undead"; //special	
+				if (mana > 49) {
+					attackName = "summon undead"; //special	
+					mana -= 50;
+				}
 				break;
 			}
 			return attackName;
 		}
 
-		public int getWraithDamage (string itsAttackName, int itsAttack, int itsPlayerDefence) //TO BE IMPLEMENTED
+		public int getWraithDamage (string itsAttackName, int itsAttack, int itsPlayerDefence) //TO BE IMPLEMENTED (TODO)
 		{
 			int wraithDamage = 0;
 			int skeletonsSummoned = 0;
@@ -192,22 +244,31 @@ namespace Monsters
 
 				if (skeletonsSummoned == 1)
 				{
-					//Skeleton summon1 = new Skeleton("Joe Bloggs 1",45,0,5,5);
+					Skeleton summon1 = new Skeleton();
+					summon1.name = "Broken man";
 				}
 				else //skeletonsSummoned = 2
 				{
-					//Skeleton summon1 = new Skeleton("Joe Bloggs 1",45,0,5,5);
-					//Skeleton summon2 = new Skeleton("Joe Bloggs 2",45,0,5,5);
+					Skeleton summon1 = new Skeleton();
+
+					summon1.name = "Right hand man";
+					summon1.health = summon1.get_stats (1);
+					summon1.mana = summon1.get_stats (2);
+					summon1.defence = summon1.get_stats (3);
+					summon1.attack = summon1.get_stats (4);
+
+					Skeleton summon2 = new Skeleton();
+					summon2.name = "Left hand man";
+					summon2.health = summon2.get_stats (1);
+					summon2.mana = summon2.get_stats (2);
+					summon2.defence = summon2.get_stats (3);
+					summon2.attack = summon2.get_stats (4);
+
+					summonedSkeletonsArray = new Skeleton[] { summon1, summon2 };
 				}
 
 			}
 			return wraithDamage;
-		}
-
-		public Skeleton [] returnSummons(Skeleton s1, Skeleton s2) //TO BE IMPLEMENTED
-		{
-			Skeleton [] summonedSkeletonsArray = {s1,s2};
-			return summonedSkeletonsArray;
 		}
 		
 	}

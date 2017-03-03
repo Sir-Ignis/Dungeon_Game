@@ -4,6 +4,7 @@ using Items;
 using Monsters;
 using Dungeons;
 using DungeonMap;
+using Combat;
 using Players;
 using MainMenu;
 using System.Threading;
@@ -23,7 +24,7 @@ namespace Dungeon_Game
 			Menu m = new Menu ();
 			Console.Clear ();
 			m.printWelcome ();
-			//Thread.Sleep (5000); //<--- remove when coding
+			Thread.Sleep (5000); //<--- remove when coding
 			Music menuMusic = new Music ("Dungeon_Ambience_Music.wav");
 			SFX sfx = new SFX ();
 		/*
@@ -115,6 +116,8 @@ namespace Dungeon_Game
 			m.print_cave();
 
 			Skeleton skele = new Skeleton ();
+			FleshEatingSpider spider = new FleshEatingSpider ();
+			spider.name = "Flesh Eating Spider";
 			Wraith Boss = new Wraith ();
 
 			const int player_start_cap = 180;
@@ -135,9 +138,11 @@ namespace Dungeon_Game
 				"\n{5} XP" +
 				"\nhas been created...\n", p1.name, p1.health, p1.mana, p1.defence, p1.attack, p1.xp); //P = Player
 
+			int player_starting_cap = p1.cap;
 		
 			Map map = new Map ();
 			Dungeon D1 = new Dungeon (map.cMap);
+			DungeonFight Fight = new DungeonFight ();
 			char [,] lMap = map.cMap;
 			string sMap = string.Empty; // here
 
@@ -186,7 +191,9 @@ namespace Dungeon_Game
 			Console.WriteLine ("MAP");
 			m.reset_colours ();
 
-			int torchLight = 5;
+			Torch.torchLight = 5;
+			//int torchesFound = 1; //FIXME
+
 			string admin_password = "20H4CKER17";
 			if (gameMode == "admin") {
 				Console.Write ("\n\n\nAdmin password:");
@@ -200,7 +207,7 @@ namespace Dungeon_Game
 					ScreenBuffer.DrawScreen ();
 
 					map.c_monsters_left = 0;
-					torchLight = 50;
+					Torch.torchLight = 50;
 					int c = 0;
 					for (int r = 0; r < 50; r++) {
 						for (int s = 0; s < 50; s++) {
@@ -259,6 +266,8 @@ namespace Dungeon_Game
 			Console.Clear ();
 
 			//ScreenBuffer bufferN = new ScreenBuffer ();
+			ScreenBuffer.setBufferSize(50,70);
+			int monsterRoll = 0;
 
 			do //Main "Game Loop" starts here
 			{
@@ -275,8 +284,8 @@ namespace Dungeon_Game
 				}
 
 				{
-					for (int e = (player_int_cords [0, 0] - torchLight); e < (player_int_cords [0, 0] + torchLight); e++) {
-						for (int f = (player_int_cords [1, 1] - torchLight); f < (player_int_cords [1, 1] + torchLight); f++) {
+					for (int e = (player_int_cords [0, 0] - Torch.torchLight); e < (player_int_cords [0, 0] + Torch.torchLight); e++) {
+						for (int f = (player_int_cords [1, 1] - Torch.torchLight); f < (player_int_cords [1, 1] + Torch.torchLight); f++) {
 							//assign visibleSquares array around player square visible = true;
 							try {
 								squareIsVisible = true;
@@ -312,14 +321,15 @@ namespace Dungeon_Game
 				//Console.WriteLine(sMap);
 
 				ScreenBuffer.Draw(sMap,0,0);
-				ScreenBuffer.DrawScreen();
-				//map.draw_map(sb);
+				//ScreenBuffer.DrawScreen();
+				map.draw_map(sb);
 
 				/*for (int iny = 0; iny < 50; iny++)
 				{
 					Console.Write("\n");
 				}*/
 
+				Console.SetCursorPosition(0,55);
 				Console.Write ("\nUser: ");
 				ConsoleKeyInfo keyInfo = Console.ReadKey();
 				if (keyInfo.Key == ConsoleKey.M)
@@ -341,7 +351,15 @@ namespace Dungeon_Game
 
 						case '1':
 							Console.WriteLine();
-							playerBackpack = playerBackpack.throw_away_items(playerBackpack); //need to fix bug by adding error checking
+							playerBackpack = playerBackpack.throw_away_items(playerBackpack, p1); //need to fix bug by adding error checking
+							p1.cap = player_starting_cap - playerBackpack.weight; //FIXME cap doesn't update
+
+							Console.WriteLine("\nPress the 'enter' key to exit the menu.");
+							keyInfo = Console.ReadKey ();
+							if (keyInfo.Key != ConsoleKey.Enter)
+							{
+								Thread.Sleep(10000);
+							}
 							break;
 							
 						case '2':
@@ -398,12 +416,25 @@ namespace Dungeon_Game
 				switch (item)
 				{
 				case 'M':
+					monsterRoll = rand.Next(1,6);
+
+					if (monsterRoll == 5) //spawn flesh eating spider
+					{
+						spider.health = spider.resetHealth(spider); //FIXME does not always reset health
+						levelsAdvanced = Fight.FightSpider(spider, p1, startHealthP, levelsAdvanced, sb);
+					}
+					else //spawn skeleton
+					{
 					skele.health = skele.resetHealth(skele);
-					levelsAdvanced = D1.Fight(skele,p1,startHealthP,levelsAdvanced,sb);
+					levelsAdvanced = Fight.FightMonster(skele,p1,startHealthP,levelsAdvanced,sb);
 					skele.name = skele.generate_random_name();
+					}
 					lMap[player_int_cords[0,0],player_int_cords[1,1]] = 'X';
-					lMap = D1.spawn_stairs(lMap);
-					lMap = D1.spawn_boss(lMap);
+
+					if (map.c_monsters_left == 0)
+					{
+					lMap = map.spawn_boss(lMap);
+					}
 					Console.Clear();
 					break;
 					
@@ -418,7 +449,7 @@ namespace Dungeon_Game
 					{
 						chest_armor_loot = D1.Chest_Loot_Armor();
 					}
-					else //Coin == 2
+					else if (Coin == 2)
 					{
 						chest_weapon_loot = D1.Chest_Loot_Weapons();
 						p1.wielding_weapon = true;
@@ -435,11 +466,11 @@ namespace Dungeon_Game
 
 					
 				case 'B':
-					levelsAdvanced = D1.Boss_Fight(Boss,p1,startHealthP,levelsAdvanced);
+					levelsAdvanced = Fight.Boss_Fight(Boss,p1,startHealthP,levelsAdvanced);
 					map.boss_slain = true;
-					map.spawn_stairs(map.cMap);
+					//map.spawn_stairs(map.cMap);
 					lMap[player_int_cords[0,0],player_int_cords[1,1]] = 'X';
-					lMap = D1.spawn_stairs(lMap);
+					lMap = map.spawn_stairs(lMap);
 					break;
 				case 'S':
 					D1.Finish();

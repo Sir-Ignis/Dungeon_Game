@@ -365,7 +365,7 @@ namespace Players
 		public string [] player_items_equiped (string[] items_worn, Container itsBackpack, Player itsP1)
 		{
 			string response = "";
-			string [] itemsToEquip = new string [6];
+			string [] itemsToEquip = new string [7];
 			/*helmet value = 1;
 			 *weapon value = 2;
 			 *armor value = 4;
@@ -412,14 +412,22 @@ namespace Players
 						case "Iron dagger":
 						itemsToEquip[5] = "Iron dagger";
 						break;
+
+						case "Iron sword":
+						itemsToEquip [6] = "Iron sword";
+						break;
+
+						default: //Nothing
+						break;
 					}
 				}
 
 				do {
-					Console.Write ("\nUser: ");
+					Console.Write ("\nUser (Item to equip): ");
 					response = Console.ReadLine();
+					//response = response.ToLower();
 				}while ( (response != itemsToEquip[0]) && (response != itemsToEquip[1]) && (response != itemsToEquip[2]) && (response != itemsToEquip[3]) && (response != itemsToEquip[4]) 
-				        && (response != itemsToEquip[4]) && (response != itemsToEquip[5]) && (response != "Nothing"));
+					&& (response != itemsToEquip[4]) && (response != itemsToEquip[5]) && (response != "Iron sword") && (response != "Nothing"));
 
 
 
@@ -432,6 +440,9 @@ namespace Players
 						break;
 						
 					case "Iron dagger":
+						wielding_weapon = true;
+						break;
+					case "Iron sword":
 						wielding_weapon = true;
 						break;
 					}
@@ -482,6 +493,18 @@ namespace Players
 						itsP1.attack += 5;
 					}
 					else //items_worn == "Iron dagger"
+					{
+						Console.WriteLine ("\nYou are already wielding an {0}",response);
+					}
+					break;
+				
+				case "iron sword":
+					if (items_worn[2] == "nothing")
+					{
+						items_worn[2] = response;
+						itsP1.attack += 10;
+					}
+					else //items_worn == "Iron sword"
 					{
 						Console.WriteLine ("\nYou are already wielding an {0}",response);
 					}
@@ -580,7 +603,8 @@ namespace Players
 			                   "\n{3} DEF" +
 			                   "\n{4} ATK" +
 			                   "\n{5} XP" +
-			                   "\nexists...\n", name, health, mana, defence, attack, xp);
+							   "\n{6} OZ CAP"+
+			                   "\nexists...\n", name, health, mana, defence, attack, xp,cap);
 			//}
 		}
 
@@ -718,10 +742,10 @@ namespace Players
 
 		//get_attack must be implemented after item slots function is implemented
 
-		public string get_attack (int mana)
+			public string get_attack (int mana, int itsP1XP)
 		{
-			string [] attacks = {"Punch","Stab","Kick"};
-			char [] shortcutAttacks = {'z','x','c'};
+			string [] attacks = {"Punch","Stab","Kick","Frenzy"};
+			char [] shortcutAttacks = {'z','x','c','v',};
 			string attack_ability = "";
 
 			Console.WriteLine ("Which attack would you like to use?");
@@ -746,6 +770,24 @@ namespace Players
 				case ConsoleKey.C:
 					attack_ability = "kick";
 					break;		
+			case ConsoleKey.V: //FIXME not working...
+					if ((itsP1XP >= 477) && (mana >= 25)) {
+						attack_ability = "frenzy";
+					} 
+					else {
+					if (itsP1XP < 477) {
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.WriteLine ("\nYou cannot use this attack ability, you are not level 2 or higher.");
+						m.reset_colours();
+						} else if (mana < 25){ //
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.WriteLine ("\nYou cannot use this attack ability, you do not have enough mana.");
+						m.reset_colours();
+					}
+					Console.WriteLine ("Using punch as default..."); 
+					attack_ability = "punch"; //TODO: think of a better method then this
+					}
+					break;
 				default: //prevents no damage from being dealt by the player if a random key is held down
 					attack_ability = "punch";
 					break;
@@ -808,6 +850,13 @@ namespace Players
 							SoundPlayer player1 = new SoundPlayer();
 							player1.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "kick.wav";
 							player1.Play();
+							break;
+				
+				case "Frenzy":
+							attack_damage = attack + rand.Next (0,10);
+							SoundPlayer player3 = new SoundPlayer();
+							player3.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "stab_sound.wav";
+							player3.Play();
 							break;
 				case "punch":
 							attack_damage = attack + rand.Next (1,3);

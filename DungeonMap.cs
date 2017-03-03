@@ -173,6 +173,7 @@ namespace DungeonMap
 
 		public void draw_map (ScreenBuffer sb)
 		{
+			Console.SetCursorPosition(0, 0);
 			int i = 0;
 			for (int y = 0; y < Game.roomHeight; y++) {
 				for (int x = 0; x < Game.roomWidth; x++) {
@@ -182,8 +183,12 @@ namespace DungeonMap
 						Console.WriteLine ();
 					}
 					switch (ScreenBuffer.screenBufferArray [x,y]) {
+					case '.':
+						Console.ForegroundColor = ConsoleColor.DarkYellow;
+						Console.Write (ScreenBuffer.screenBufferArray [x, y]);
+						break;
 					case 'C':
-						Console.ForegroundColor = ConsoleColor.Yellow;
+						Console.ForegroundColor = ConsoleColor.Cyan;
 						Console.Write (ScreenBuffer.screenBufferArray [x,y]);
 						break;
 					case 'M':
@@ -266,6 +271,15 @@ namespace DungeonMap
 
 		public static void resetBuffer() 
 		{
+			Game.roomWidth = 50;
+			Game.roomHeight = 51;
+			screenBufferArray = new char[Game.roomWidth, Game.roomHeight];
+		}
+
+		public static void setBufferSize(int xB, int yB)
+		{
+			Game.roomWidth = xB;
+			Game.roomHeight = yB;
 			screenBufferArray = new char[Game.roomWidth, Game.roomHeight];
 		}
 

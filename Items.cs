@@ -1,4 +1,5 @@
 using System;
+using Players;
 
 namespace Items
 {
@@ -77,62 +78,133 @@ namespace Items
 			//}
 		}
 
-		public Container throw_away_items (Container itsBackpack) //still needs to be implemented
+		public Container throw_away_items (Container itsBackpack, Player itsP1) //still needs to be implemented
 		{
-			//string response = "";
+			string response = "";
 			int x = 0;
-			/*Console.WriteLine ("\nWould you like to throw away items from your backpack? ");
+			int x2 = 0;
+			int w = 0;
 
 			do {
+				Console.WriteLine ("Would you like to throw away more than one item? ");
 				Console.Write ("\nUser: ");
 				response = Console.ReadLine ();
-			} while ( ( (response != "yes") && (response != "Yes") && (response != "YES") ) && ( (response != "no") && (response != "No") && (response != "NO") ));
+				response = response.ToLower ();
+				} while ((response != "yes") && (response != "no"));
 
-			if ((response == "yes") || (response == "Yes") || (response == "YES")) 
-			{*/
+			if (response == "no") {
 				Console.WriteLine ("From which slot would you like to throw away an item? ");
 				do {
 					Console.Write ("\nUser: ");
-					x = Convert.ToInt32(Console.ReadLine ());
-				}while ( (x < 0) || (x > 20) );
+					x = Convert.ToInt32 (Console.ReadLine ());
+				} while (((x < 0) || (x > 20)));
 
 				if (itsBackpack.items_contained [x] == "") {
 					Console.WriteLine ("In slot {0} of your backpack you have nothing.", x);
-				}
+				} else {
+					Item I = new Item ("", 0);
 
-				else
-				{
-				Console.WriteLine ("\n\nThrowing away a {0} ...",itsBackpack.items_contained[x]);
-				itsBackpack.items_contained[x] = "";
-				Item I = new Item("",0);
+					switch (itsBackpack.items_contained [x]) {
+					case "Torch":
+						I.weight = 5;
+						break;
+					case "Iron dagger":
+						I.weight = 10;
+						break;
+					case "Iron sword":
+						I.weight = 40;
+						break;
+					case "Leather cowl":
+						I.weight = 2;
+						break;
+					case "Wooden shield":
+						I.weight = 15;
+						break;
+					case "Leather trousers":
+						I.weight = 3;
+						break;
+					case "Leather shoes":
+						I.weight = 3;
+						break;
+					case "Leather armour":
+						I.weight = 10;
+						break;
+					}
+					//this does not work, find out why or write another method
+					//itsBackpack.weight -= I.weight;
+					itsBackpack.weight -= I.weight;
+					Console.WriteLine ("\n\nThrowing away a {0} ...", itsBackpack.items_contained [x]);
+					itsBackpack.items_contained [x] = "";
+				}
+			} 
+			else { //response == yes
+				Console.WriteLine ("From which slots would you like to throw away an item? ");
+				Console.WriteLine ("Items from the start slot to the end slot will be deleted.");
+				do {
+					Console.Write ("\nUser (start slot): ");
+					x = Convert.ToInt32 (Console.ReadLine ());
+					Console.Write ("\nUser (end slot): ");
+					x2 = Convert.ToInt32 (Console.ReadLine ());
+				} while ((x2 - x < 0) && ((x < 0) || (x > 20)) && ((x2 < 0) || (x2 > 20)));
 
-				switch (itsBackpack.items_contained[x])
-				{
-				case "Torch":
-					I.weight = 5;
-					break;
-				case "Iron dagger":
-					I.weight = 10;
-					break;
-				case "Leather cowl":
-					I.weight = 2;
-					break;
-				case "Wooden shield":
-					I.weight = 15;
-					break;
-				case "Leather trousers":
-					I.weight = 3;
-					break;
-				case "Leather shoes":
-					I.weight = 3;
-					break;
-				case "Leather armour":
-					I.weight = 10;
-					break;
+				for (int i = x2; i > x-1; i--) {
+					if (itsBackpack.items_contained [i] == "") {
+						Console.WriteLine ("In slot {0} of your backpack you have nothing.", i);
+					} 
+					else {
+						Item I = new Item ("", 0);
+
+						switch (itsBackpack.items_contained [i]) {
+						case "Torch":
+							I.weight = 5;
+							w += I.weight;
+							break;
+						case "Iron dagger":
+							I.weight = 10;
+							w += I.weight;
+							break;
+						case "Iron sword":
+							I.weight = 40;
+							w += I.weight;
+							break;
+						case "Leather cowl":
+							I.weight = 2;
+							w += I.weight;
+							break;
+						case "Wooden shield":
+							I.weight = 15;
+							w += I.weight;
+							break;
+						case "Leather trousers":
+							I.weight = 3;
+							w += I.weight;
+							break;
+						case "Leather shoes":
+							I.weight = 3;
+							w += I.weight;
+							break;
+						case "Leather armour":
+							I.weight = 10;
+							w += I.weight;
+							break;
+						
+						default:
+							Console.WriteLine (items_contained [i]);
+							I.weight=99;
+							w += I.weight;
+							break;
+						}
+						//Console.WriteLine (I.weight);
+						//this does not work, find out why or write another method
+						//itsBackpack.weight = itsBackpack.weight - I.weight;
+						Console.WriteLine (w);
+						itsBackpack.weight -= w;
+						Console.WriteLine ("\n\nThrowing away a {0} ...", itsBackpack.items_contained [i]);
+						itsBackpack.items_contained [i] = "";
+					}
 				}
-				itsBackpack.weight -= I.weight;
-				}
-			//}
+			}
+            
 			return itsBackpack;
 		}
 	}
@@ -152,8 +224,16 @@ namespace Items
 		{
 			Weapon weapon_returned = new Weapon ("", 0, 0);
 			Weapon Iron_dagger = new Weapon ("Iron dagger", 5, 10);
-			
-			weapon_returned = Iron_dagger;
+			Weapon Iron_sword = new Weapon ("Iron sword", 10, 40);
+
+			switch (x) {
+			case 1:
+				weapon_returned = Iron_dagger;
+				break;
+			case 2:
+				weapon_returned = Iron_sword;
+				break;
+			}
 			return weapon_returned;
 		}
 	}
@@ -204,7 +284,7 @@ namespace Items
 	class Utility : Item // for torch (provides 6 adjacent squares all around the player) TO BE IMPLEMENTED
 	{
 		public bool providesLight = false;
-
+		public int torchLight = 5;
 		public Utility (string itsName, int itsWeight, bool itsProvidesLight) : base  (itsName, itsWeight)
 		{
 			name = itsName;
